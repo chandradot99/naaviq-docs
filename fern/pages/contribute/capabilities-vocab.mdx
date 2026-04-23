@@ -1,0 +1,98 @@
+---
+title: Capabilities vocabulary
+description: How the canonical capability vocabulary is maintained — and why adding a new term is a deliberate schema change.
+---
+
+`capabilities` is a queryable array on both models and voices. The terms
+stored in it are drawn from a **canonical, controlled vocabulary**. The
+parser is instructed to never invent terms — anything outside the list
+lives in `meta`.
+
+See the [Capabilities concept page](/docs/concepts/capabilities) for the current
+vocabulary.
+
+## The rule
+
+<Warning>
+  **Never let the AI parser invent capability terms.** If the canonical list
+  doesn't fit, the feature goes in `meta` as a freeform key — it does NOT
+  become a new capability flag.
+</Warning>
+
+Why this is strict: the whole point of a controlled vocabulary is that
+`?capabilities=speaker_diarization` works reliably across every provider.
+The moment one provider emits `speaker_identification` or
+`diarize_speakers` instead, the filter breaks for that provider's rows.
+
+## Adding a new term
+
+Adding a capability is a deliberate, multi-repo change. The steps, in
+order:
+
+1. **Open an RFC issue** on `naaviq-voice-providers` describing:
+   - The proposed term (e.g., `voice_conversion`)
+   - Which vendors support it
+   - Why `meta` isn't sufficient
+   - Migration plan for existing rows
+
+2. **Get maintainer buy-in** before the PR. Vocabulary changes are
+   coordinated because they're effectively API changes for every consumer
+   filtering by capabilities.
+
+3. **The PR must touch four places:**
+   - `naaviq/sync/ai_parser.py` — add the term to the canonical vocab
+     block in the system prompt
+   - `naaviq/sync/base.py` (or wherever the vocab constant lives) — the
+     Python-side validation
+   - `naaviq-docs` (this repo) — add to the Capabilities page
+   - `CHANGELOG.md` entry in both repos
+
+4. **Announce 14 days before deploy.** Clients filtering by capabilities
+   need time to know the new term is coming. We pin the new term behind
+   a feature flag in the AI parser during that window.
+
+## What goes in `meta` instead
+
+Anything that doesn't fit the canonical list. Examples:
+
+- Latency numbers: `meta.latency_p50_ms = 40`
+- Snapshot / EOL dates: `meta.snapshot_date = "2026-01-12"`
+- Hardware requirements: `meta.requires_gpu = true`
+- Provider-specific quality tiers: `meta.quality = "premium"`
+
+`meta` is queryable too (it's JSONB), but consumers should treat it as
+advisory — provider-specific and not validated.
+
+## Capabilities vs model vs voice
+
+Most capabilities are properties of the **model** (the model supports SSML;
+the model supports emotion). A **voice** carries its own flag only when the
+feature is opt-in per voice — the model supports emotion in general, but
+only some voices actually accept emotion tags.
+
+If you're unsure, put it on the model. It's easier to promote a flag from
+model→voice later than to split it back.
+
+## Test before submitting
+
+```python
+from naaviq.sync.capabilities import (
+    STT_MODEL_CAPS, TTS_MODEL_CAPS, VOICE_CAPS
+)
+
+for m in result.stt_models:
+    for cap in m.capabilities:
+        assert cap in STT_MODEL_CAPS, f"Non-canonical STT cap: {cap}"
+
+for m in result.tts_models:
+    for cap in m.capabilities:
+        assert cap in TTS_MODEL_CAPS, f"Non-canonical TTS cap: {cap}"
+
+for v in result.tts_voices:
+    for cap in v.capabilities:
+        assert cap in VOICE_CAPS, f"Non-canonical voice cap: {cap}"
+```
+
+If a test like this fails, either the term belongs in `meta` or you're
+proposing a vocabulary change — which goes through the RFC above, not
+through the syncer PR.

@@ -1,0 +1,77 @@
+---
+title: Low-latency streaming STT
+description: Find streaming STT models suitable for real-time voice agents.
+---
+
+For a live voice agent, non-streaming STT is a non-starter — you can't wait
+2+ seconds for a full transcription before the LLM can respond. This recipe
+filters to streaming-capable STT models and ranks them by documented
+latency where available.
+
+## 1. Filter to streaming STT
+
+<CodeBlocks>
+```bash curl
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=stt" \
+  | jq '[.[] | select(.streaming == true)]'
+```
+
+```python Python
+import httpx
+
+models = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/models",
+    params={"type": "stt"}
+).json()
+
+streaming = [m for m in models if m["streaming"]]
+```
+</CodeBlocks>
+
+## 2. Add language and region constraints
+
+```python
+# English-capable streaming STT in the EU
+en_eu = [
+    m for m in streaming
+    if ("en" in m["languages"] or "*" in m["languages"])
+    and ("eu" in m["regions"] or "global" in m["regions"])
+]
+```
+
+## 3. Rank by documented latency
+
+Latency is stored in `meta` when the vendor documents it:
+
+```python
+def latency(m):
+    return m.get("meta", {}).get("latency_p50_ms", float("inf"))
+
+en_eu.sort(key=latency)
+for m in en_eu[:10]:
+    print(f'{m["provider_id"]} {m["id"]}: {latency(m)}ms')
+```
+
+Providers that don't document latency sort to the end. That's the correct
+default — unknown isn't zero.
+
+## 4. Add capability requirements
+
+Want word timestamps and punctuation in addition to streaming?
+
+```bash
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=stt&capabilities=word_timestamps,punctuation" \
+  | jq '[.[] | select(.streaming == true)]'
+```
+
+## What to benchmark yourself
+
+Document latency is often the best case — a single WAV file on a fast
+connection. Real voice-agent latency depends on:
+
+- Your server's distance from the provider's endpoint
+- Audio chunk size and VAD tuning
+- The provider's regional endpoint selection
+
+Shortlist three candidates from this recipe, then benchmark end-to-end from
+your actual deployment region.

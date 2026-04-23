@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Naaviq logo drafts</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font: 14px/1.5 -apple-system, system-ui, sans-serif;
+        margin: 0;
+        padding: 32px;
+        background: #fafafa;
+        color: #111;
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background: #0b0d12; color: #eee; }
+      }
+      h1 { font-size: 18px; margin: 0 0 24px; font-weight: 600; }
+      h2 { font-size: 13px; margin: 32px 0 12px; font-weight: 600; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
+      .row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 24px;
+        align-items: center;
+        padding: 20px 0;
+        border-top: 1px solid rgba(128,128,128,0.2);
+      }
+      .label { font-weight: 600; }
+      .label small { display: block; font-weight: 400; opacity: 0.65; margin-top: 4px; }
+      .sizes { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+      .size {
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+      }
+      .size small { font-size: 11px; opacity: 0.55; }
+      .inv {
+        background: #111;
+        color: #fff;
+        padding: 12px;
+        border-radius: 8px;
+      }
+      @media (prefers-color-scheme: dark) {
+        .inv { background: #fff; color: #111; }
+      }
+      .wordmark-row .sizes { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .wordmark-row .size { flex-direction: row; gap: 16px; }
+    </style>
+  </head>
+  <body>
+    <h1>Naaviq logo drafts</h1>
+
+    <h2>Icon marks</h2>
+
+    <div class="row">
+      <div class="label">01 · Paper boat + wave</div>
+      <div class="sizes">
+        <div class="size"><img src="01-paper-boat.svg" width="96"/><small>96</small></div>
+        <div class="size"><img src="01-paper-boat.svg" width="48"/><small>48</small></div>
+        <div class="size"><img src="01-paper-boat.svg" width="24"/><small>24</small></div>
+        <div class="size"><img src="01-paper-boat.svg" width="16"/><small>16</small></div>
+        <div class="size inv"><img src="01-paper-boat.svg" width="32"/><small>inv</small></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">02 · Sail as speech bubble</div>
+      <div class="sizes">
+        <div class="size"><img src="02-sail-speech-bubble.svg" width="96"/><small>96</small></div>
+        <div class="size"><img src="02-sail-speech-bubble.svg" width="48"/><small>48</small></div>
+        <div class="size"><img src="02-sail-speech-bubble.svg" width="24"/><small>24</small></div>
+        <div class="size"><img src="02-sail-speech-bubble.svg" width="16"/><small>16</small></div>
+        <div class="size inv"><img src="02-sail-speech-bubble.svg" width="32"/><small>inv</small></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="label">03 · Ship's wheel + ripples</div>
+      <div class="sizes">
+        <div class="size"><img src="03-ships-wheel.svg" width="96"/><small>96</small></div>
+        <div class="size"><img src="03-ships-wheel.svg" width="48"/><small>48</small></div>
+        <div class="size"><img src="03-ships-wheel.svg" width="24"/><small>24</small></div>
+        <div class="size inv"><img src="03-ships-wheel.svg" width="32"/><small>inv</small></div>
+      </div>
+    </div>
+
+    <h2>Wordmarks (icon + "naaviq")</h2>
+
+    <div class="row wordmark-row">
+      <div class="label">01 · Paper boat<small>lockup</small></div>
+      <div class="sizes">
+        <div class="size"><img src="01-paper-boat-wordmark.svg" height="64"/><small>64px tall — hero</small></div>
+        <div class="size"><img src="01-paper-boat-wordmark.svg" height="40"/><small>40px — nav header</small></div>
+        <div class="size"><img src="01-paper-boat-wordmark.svg" height="28"/><small>28px — dense UI</small></div>
+      </div>
+    </div>
+
+    <div class="row wordmark-row">
+      <div class="label">02 · Sail speech bubble<small>lockup</small></div>
+      <div class="sizes">
+        <div class="size"><img src="02-sail-speech-bubble-wordmark.svg" height="64"/><small>64px tall — hero</small></div>
+        <div class="size"><img src="02-sail-speech-bubble-wordmark.svg" height="40"/><small>40px — nav header</small></div>
+        <div class="size"><img src="02-sail-speech-bubble-wordmark.svg" height="28"/><small>28px — dense UI</small></div>
+      </div>
+    </div>
+
+    <div class="row wordmark-row">
+      <div class="label">03 · Ship's wheel<small>lockup</small></div>
+      <div class="sizes">
+        <div class="size"><img src="03-ships-wheel-wordmark.svg" height="64"/><small>64px tall — hero</small></div>
+        <div class="size"><img src="03-ships-wheel-wordmark.svg" height="40"/><small>40px — nav header</small></div>
+        <div class="size"><img src="03-ships-wheel-wordmark.svg" height="28"/><small>28px — dense UI</small></div>
+      </div>
+    </div>
+
+    <h2>Embedded-name concepts</h2>
+
+    <div class="row wordmark-row">
+      <div class="label">E1 · Wave under wordmark<small>signature style — scales to favicon</small></div>
+      <div class="sizes">
+        <div class="size"><img src="E1-wave-under-wordmark.svg" height="72"/><small>hero</small></div>
+        <div class="size"><img src="E1-wave-under-wordmark.svg" height="44"/><small>header</small></div>
+        <div class="size"><img src="E1-wave-under-wordmark.svg" height="28"/><small>dense</small></div>
+      </div>
+    </div>
+
+    <div class="row wordmark-row">
+      <div class="label">E2 · Boat replaces the "v"<small>boldest embed — "naa · boat · iq"</small></div>
+      <div class="sizes">
+        <div class="size"><img src="E2-boat-replaces-v.svg" height="72"/><small>hero</small></div>
+        <div class="size"><img src="E2-boat-replaces-v.svg" height="44"/><small>header</small></div>
+        <div class="size"><img src="E2-boat-replaces-v.svg" height="28"/><small>dense</small></div>
+      </div>
+    </div>
+
+    <div class="row wordmark-row">
+      <div class="label">E3 · Boat as the "i" dot + wave<small>subtle charm — two embeds at once</small></div>
+      <div class="sizes">
+        <div class="size"><img src="E3-boat-on-i-dot.svg" height="72"/><small>hero</small></div>
+        <div class="size"><img src="E3-boat-on-i-dot.svg" height="44"/><small>header</small></div>
+        <div class="size"><img src="E3-boat-on-i-dot.svg" height="28"/><small>dense</small></div>
+      </div>
+    </div>
+  </body>
+</html>

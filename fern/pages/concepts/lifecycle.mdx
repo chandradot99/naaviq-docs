@@ -1,0 +1,69 @@
+---
+title: Lifecycle
+description: Product stage tracking — alpha, beta, ga, deprecated — and how it interacts with stale-sweeping.
+---
+
+`lifecycle` is a `text` column on **models only** with four allowed values:
+
+| Value | Meaning |
+|---|---|
+| `alpha` | Experimental. May change or vanish without notice |
+| `beta` | Public preview. Stable enough to try, not stable enough to depend on |
+| `ga` | Generally available. Default for anything released |
+| `deprecated` | No longer recommended. Paired with `deprecated_at` |
+
+Default is `ga`.
+
+## The deprecated contract
+
+A database `CHECK` constraint enforces that `lifecycle = 'deprecated'` **if
+and only if** `deprecated_at IS NOT NULL`. The two fields move together.
+
+### When deprecation happens
+
+1. A sync runs and doesn't include a previously known model
+2. The admin apply logic sets both `lifecycle='deprecated'` **and**
+   `deprecated_at=now()` in the same transaction
+3. Next poll with `?include_deprecated=true` includes the row; default
+   queries exclude it
+
+### When a model "un-deprecates"
+
+If a model that was stale reappears in a later sync, the apply logic:
+
+1. Takes the incoming payload's `lifecycle` (defaults to `ga`)
+2. Clears `deprecated_at`
+
+This handles the case where a vendor temporarily renames or removes a model
+from their docs and then brings it back.
+
+## What syncers emit
+
+Syncers **only** emit `alpha`, `beta`, or `ga`. The `deprecated` value is
+reserved for the admin stale-sweep — syncers never set it directly.
+
+Emit `alpha` / `beta` only when the vendor **explicitly** labels the model
+that way: "Preview," "Experimental," "Beta," etc. Don't infer from version
+numbers or recency.
+
+## Filtering
+
+<CodeBlocks>
+```bash "GA only (default — deprecated is excluded by default)"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models"
+```
+
+```bash "Beta + GA"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?lifecycle=beta&lifecycle=ga"
+```
+
+```bash "Include deprecated too"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?include_deprecated=true"
+```
+</CodeBlocks>
+
+## Polling and deprecation events
+
+When you poll with `updated_since`, `include_deprecated` **auto-flips to
+true** so you don't miss deprecation events. See
+[Incremental sync](/docs/concepts/incremental-sync) for the full polling pattern.

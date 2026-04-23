@@ -1,0 +1,76 @@
+---
+title: Incremental sync
+description: Poll for deltas without refetching the whole registry every time.
+---
+
+All list endpoints support **`?updated_since=<ISO-8601>`** for incremental
+polling. Use it when you maintain a local mirror of the registry and only
+want new or changed rows.
+
+## The pattern
+
+```python
+import httpx
+from datetime import datetime, timezone
+
+since = load_cursor()  # your last stored timestamp; None on first run
+
+resp = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/providers",
+    params={"updated_since": since.isoformat()} if since else {},
+)
+rows = resp.json()
+
+for row in rows:
+    upsert_locally(row)
+
+# Save the newest updated_at we saw for the next poll
+if rows:
+    save_cursor(max(r["updated_at"] for r in rows))
+```
+
+## Two things to know
+
+### 1. The boundary row can duplicate
+
+The filter is inclusive (`>=`), so the row whose `updated_at` exactly equals
+`updated_since` will be returned **again** on the next poll. Always dedupe by
+`id` on the client side — don't assume each row appears exactly once.
+
+### 2. `include_deprecated` auto-flips to `true`
+
+When `updated_since` is set, `include_deprecated` is automatically `true` so
+you see deprecation events. If you explicitly want to exclude deprecated rows
+from a polling response, pass `include_deprecated=false`.
+
+```bash
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers?updated_since=2026-04-15T00:00:00Z"
+# ^ includes deprecated rows by default
+
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers?updated_since=2026-04-15T00:00:00Z&include_deprecated=false"
+# ^ opt out if you really want to
+```
+
+## What "changed" means
+
+A row's `updated_at` bumps whenever:
+
+- A new sync writes a diff to any field
+- A model is deprecated (sets `lifecycle='deprecated'`, `deprecated_at=now()`)
+- A deprecated model returns to a sync (clears `deprecated_at`)
+
+Cosmetic re-writes (same data fetched from the same source) **do not** bump
+`updated_at`. The sync logic compares field-by-field and only writes when
+something changed.
+
+## Recommended polling cadence
+
+- **Providers endpoint:** hourly is more than enough — new providers land weekly at most
+- **Models endpoint:** every 6–24 hours — model catalogs shift when vendors push
+- **Voices endpoint:** daily — voice catalogs churn more, especially ElevenLabs
+
+## Full mirror pattern
+
+See [Recipe: Mirror the registry locally](/docs/recipes/local-mirror) for a complete
+end-to-end example including error handling, cursor persistence, and
+reconnection.

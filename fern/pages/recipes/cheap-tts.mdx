@@ -1,0 +1,95 @@
+---
+title: Cheapest TTS per 1M characters
+description: Normalize TTS pricing across providers to a per-1M-character cost.
+---
+
+TTS pricing is inconsistent — some vendors charge per character, others per
+minute of audio, others per word. This recipe normalizes everything to
+**cost per 1 million characters** so you can compare apples to apples.
+
+## 1. Pull all TTS models with pricing
+
+```python
+import httpx
+
+models = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/models",
+    params={"type": "tts"}
+).json()
+
+priced = [m for m in models if m.get("pricing", {}).get("price_usd")]
+```
+
+## 2. Normalize to cost per 1M characters
+
+Rough conversion constants — adjust for your expected text and speaking
+rate:
+
+```python
+CHARS_PER_WORD = 5
+CHARS_PER_MINUTE = 750      # ~150 wpm × 5 chars/word
+CHARS_PER_SECOND = CHARS_PER_MINUTE / 60
+
+def per_million_chars(pricing):
+    unit = pricing["unit"]
+    price = pricing["price_usd"]
+    if unit == "character":
+        return price * 1_000_000
+    if unit == "word":
+        return price * (1_000_000 / CHARS_PER_WORD)
+    if unit == "minute":
+        return price * (1_000_000 / CHARS_PER_MINUTE)
+    if unit == "second":
+        return price * (1_000_000 / CHARS_PER_SECOND)
+    return None
+
+ranked = []
+for m in priced:
+    cost = per_million_chars(m["pricing"])
+    if cost is not None:
+        ranked.append((cost, m))
+
+ranked.sort(key=lambda x: x[0])
+
+for cost, m in ranked[:10]:
+    print(f'${cost:>7.2f}  {m["provider_id"]:<14}  {m["id"]}')
+```
+
+## 3. Account for free tiers
+
+Some vendors offer generous free quotas — factor them in at your expected
+volume:
+
+```python
+def effective_cost(pricing, monthly_chars=1_000_000):
+    raw = pricing["price_usd"]
+    unit = pricing["unit"]
+    free = pricing.get("free_quota", {})
+
+    if free.get("unit") == "character" and free.get("period") == "month":
+        billable = max(0, monthly_chars - free["amount"])
+    else:
+        billable = monthly_chars
+
+    # ... convert billable to per-unit and compute
+```
+
+## 4. Check variants
+
+Premium voices often cost more than standard voices on the same model.
+Check `pricing.variants` for the breakdown:
+
+```python
+for m in priced:
+    variants = m["pricing"].get("variants", [])
+    if variants:
+        print(m["provider_id"], m["id"])
+        for v in variants:
+            print(f'   {v["applies_to"]}: ${v["price_usd"]}/{v["unit"]}')
+```
+
+## Caveat
+
+`pricing.as_of` tells you when we captured each number. Anything older than
+a few weeks should be double-checked at `pricing.source_url` before you
+commit to a vendor. TTS pricing moves — usually down, sometimes up.

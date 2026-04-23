@@ -1,0 +1,200 @@
+---
+title: Writing a syncer
+description: End-to-end walkthrough of adding a provider — the contract, a worked example for each source type, and the registry entry.
+---
+
+A syncer is a Python class that implements one method — `sync()` — returning
+a `SyncResult` with models and voices. The `naaviq-admin` apply pipeline
+diffs the result against the DB and upserts.
+
+## The contract
+
+```python
+from naaviq.sync.base import ProviderSyncer, SyncResult
+
+class MyProviderSyncer(ProviderSyncer):
+    provider_id = "myprovider"
+    source = "mixed"                   # "api" | "docs" | "mixed"
+
+    async def sync(self) -> SyncResult:
+        return SyncResult(
+            stt_models=[...],
+            tts_models=[...],
+            tts_voices=[...],
+            source=self.source,
+            api_urls=["https://api.myprovider.com/..."],
+            docs_urls=["https://docs.myprovider.com/..."],
+        )
+```
+
+For TTS-only providers, return `stt_models=[]`. For STT-only, return
+`tts_models=[]` and `tts_voices=[]`. Don't skip the field.
+
+## Example: `api` source (Deepgram-style)
+
+When the provider exposes a clean REST API, call it directly:
+
+```python
+import httpx
+from naaviq.sync.base import ProviderSyncer, SyncResult, SyncModel
+from naaviq.sync.language import normalize_languages
+
+class ExampleAPISyncer(ProviderSyncer):
+    provider_id = "example"
+    source = "api"
+
+    async def sync(self) -> SyncResult:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.get(
+                "https://api.example.com/v1/models",
+                headers={"Authorization": f"Bearer {self.api_key}"},
+            )
+            resp.raise_for_status()
+            raw_models = resp.json()
+
+        stt_models = [
+            SyncModel(
+                id=m["id"],
+                type="stt",
+                display_name=m["name"],
+                languages=normalize_languages(m["languages"]),
+                streaming=m.get("streaming", False),
+                is_default=m.get("is_default", False),
+                capabilities=_map_capabilities(m),
+                lifecycle="ga",
+                pricing={},              # unless the API returns it
+                meta={},
+            )
+            for m in raw_models
+            if m["type"] == "stt"
+        ]
+
+        return SyncResult(
+            stt_models=stt_models,
+            tts_models=[],
+            tts_voices=[],
+            source=self.source,
+            api_urls=["https://api.example.com/v1/models"],
+            docs_urls=["https://docs.example.com/models"],
+        )
+```
+
+## Example: `docs` source (OpenAI-style)
+
+When the provider has no programmatic model listing, call the AI parser on
+their documentation pages:
+
+```python
+from naaviq.sync.ai_parser import parse_models_from_docs
+
+class ExampleDocsSyncer(ProviderSyncer):
+    provider_id = "example"
+    source = "docs"
+
+    async def sync(self) -> SyncResult:
+        tts_models, tts_notes = await parse_models_from_docs(
+            seed_urls=["https://docs.example.com/tts/models"],
+            provider_id=self.provider_id,
+            model_type="tts",
+            guidance=(
+                "Mark the newest family root as is_default. "
+                "Populate meta with snapshot_date when a dated snapshot exists. "
+                "Only set lifecycle='beta' if the docs explicitly say 'Preview' or 'Beta'."
+            ),
+        )
+
+        stt_models, stt_notes = await parse_models_from_docs(
+            seed_urls=["https://docs.example.com/stt/models"],
+            provider_id=self.provider_id,
+            model_type="stt",
+            guidance="Keep streaming models only; skip anything that's file-only.",
+        )
+
+        return SyncResult(
+            stt_models=stt_models,
+            tts_models=tts_models,
+            tts_voices=[],   # or a parse_voices_from_docs call
+            source=self.source,
+            docs_urls=[
+                "https://docs.example.com/tts/models",
+                "https://docs.example.com/stt/models",
+            ],
+        )
+```
+
+See [Using the AI parser](/contribute/ai-parser) for how to write good
+`guidance=` prompts.
+
+## Example: `mixed` source (Cartesia-style)
+
+Run API fetches and doc parses in parallel:
+
+```python
+import asyncio
+from naaviq.sync.ai_parser import parse_models_from_docs
+
+class ExampleMixedSyncer(ProviderSyncer):
+    provider_id = "example"
+    source = "mixed"
+
+    async def sync(self) -> SyncResult:
+        voices_data, (tts_models, _notes) = await asyncio.gather(
+            self._fetch_voices_api(),
+            parse_models_from_docs(
+                seed_urls=["https://docs.example.com/tts/models"],
+                provider_id=self.provider_id,
+                model_type="tts",
+                guidance="...",
+            ),
+        )
+
+        return SyncResult(
+            stt_models=[],
+            tts_models=tts_models,
+            tts_voices=self._parse_voices(voices_data),
+            source=self.source,
+            api_urls=["https://api.example.com/voices"],
+            docs_urls=["https://docs.example.com/tts/models"],
+        )
+```
+
+## Registering
+
+Open `naaviq/sync/registry.py` and add one line:
+
+```python
+SyncerEntry(
+    provider_id="example",
+    display_name="Example",
+    type="tts",                       # "stt" | "tts" | "both" — seeded, then derived on sync
+    syncer="naaviq.sync.example:ExampleSyncer",
+),
+```
+
+Both `scripts/sync.py` (CLI) and `naaviq-admin` (API) read from the same
+registry. One line, one source of truth.
+
+## Smoke test
+
+Every syncer module has a `_main()` runner that prints the parsed output
+without touching the database:
+
+```bash
+uv sync --extra sync
+EXAMPLE_API_KEY=... ANTHROPIC_API_KEY=... uv run python -m naaviq.sync.example
+```
+
+Include the output in your PR description so reviewers can sanity-check
+the shape before applying.
+
+## What to put where
+
+| Where | What belongs |
+|---|---|
+| Core schema fields | `id`, `languages`, `streaming`, `capabilities`, canonical values only |
+| `meta` | Provider-specific extras — snapshot dates, latency hints, feature toggles |
+| `pricing` | Only if vendor prints an explicit number; else `{}` |
+| `regions` | Only canonical values (`us`, `eu`, `asia`, `global`); else `[]` |
+| `compatible_models` | `["*"]` if voices work everywhere; explicit ids if restricted |
+
+When in doubt, put it in `meta`.

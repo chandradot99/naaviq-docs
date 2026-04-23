@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" fill="none">
+  <!-- Paper boat icon -->
+  <g transform="translate(6, 10)">
+    <path d="M 22 0 L 22 28 L 44 28 Z" fill="#BFDBFE"/>
+    <path d="M 4 28 L 48 28 L 42 44 L 10 44 Z" fill="#60A5FA"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="64" y="48" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="42" font-weight="700" fill="#F3F4F6" letter-spacing="-1.6">naaviq</text>
+</svg>

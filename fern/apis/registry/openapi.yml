@@ -1,0 +1,271 @@
+# Placeholder OpenAPI spec. Run `./scripts/fetch-openapi.sh prod` to
+# replace with the live spec from providers.naaviq.ai.
+#
+# FastAPI generates this automatically at /openapi.json — do not edit by hand.
+
+openapi: 3.1.0
+info:
+  title: Naaviq Voice Provider Registry
+  version: "0.1.0"
+  description: |
+    Public, read-only registry of STT and TTS voice providers — models, voices,
+    languages, and capabilities. Rate limited to 100 req/min/IP. No auth.
+
+servers:
+  - url: https://naaviq-voice-providers-production.up.railway.app
+    description: Production
+  - url: http://localhost:8000
+    description: Local development
+
+paths:
+  /v1/providers:
+    get:
+      summary: List all providers
+      tags: [Providers]
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [stt, tts, both]
+        - name: include_deprecated
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: updated_since
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: List of providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Provider"
+
+  /v1/providers/{id}:
+    get:
+      summary: Get a single provider
+      tags: [Providers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+
+  /v1/providers/{id}/models:
+    get:
+      summary: List models for a provider
+      tags: [Models]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: type
+          in: query
+          schema: { type: string, enum: [stt, tts] }
+        - name: capabilities
+          in: query
+          description: Comma-separated list — must match ALL
+          schema: { type: string }
+        - name: language
+          in: query
+          schema: { type: string }
+        - name: region
+          in: query
+          schema: { type: string, enum: [us, eu, asia, global] }
+        - name: lifecycle
+          in: query
+          schema: { type: string, enum: [alpha, beta, ga, deprecated] }
+      responses:
+        "200":
+          description: Models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Model"
+
+  /v1/providers/{id}/voices:
+    get:
+      summary: List voices for a provider
+      tags: [Voices]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: gender
+          in: query
+          schema: { type: string, enum: [male, female, neutral] }
+        - name: language
+          in: query
+          schema: { type: string }
+        - name: model
+          in: query
+          description: Filter voices compatible with this model id
+          schema: { type: string }
+        - name: capabilities
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Voices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Voice"
+
+  /v1/models:
+    get:
+      summary: Cross-provider model search
+      tags: [Catalog]
+      responses:
+        "200":
+          description: Models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Model"
+
+  /v1/voices:
+    get:
+      summary: Cross-provider voice search
+      tags: [Catalog]
+      responses:
+        "200":
+          description: Voices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Voice"
+
+  /health:
+    get:
+      summary: Health check
+      tags: [Meta]
+      responses:
+        "200":
+          description: OK
+
+components:
+  schemas:
+    Provider:
+      type: object
+      properties:
+        id: { type: string, example: cartesia }
+        display_name: { type: string, example: Cartesia }
+        type:
+          type: string
+          enum: [stt, tts, both]
+        source:
+          type: string
+          enum: [api, docs, mixed]
+        api_urls:
+          type: array
+          items: { type: string, format: uri }
+        docs_urls:
+          type: array
+          items: { type: string, format: uri }
+        updated_at: { type: string, format: date-time }
+        deprecated_at:
+          type: [string, "null"]
+          format: date-time
+
+    Model:
+      type: object
+      properties:
+        id: { type: string, example: sonic-3 }
+        provider_id: { type: string, example: cartesia }
+        type:
+          type: string
+          enum: [stt, tts]
+        display_name: { type: string }
+        description: { type: string }
+        languages:
+          type: array
+          items: { type: string }
+          description: BCP-47 codes, or ["*"] for "many / no enumerated list"
+        streaming: { type: boolean }
+        is_default: { type: boolean }
+        lifecycle:
+          type: string
+          enum: [alpha, beta, ga, deprecated]
+        capabilities:
+          type: array
+          items: { type: string }
+        regions:
+          type: array
+          items: { type: string, enum: [us, eu, asia, global] }
+        sample_rates_hz:
+          type: array
+          items: { type: integer }
+        audio_formats:
+          type: array
+          items: { type: string }
+        max_text_chars:
+          type: [integer, "null"]
+        max_audio_seconds:
+          type: [integer, "null"]
+        pricing:
+          type: object
+          description: See Concepts → Pricing for the full schema
+        meta:
+          type: object
+        updated_at: { type: string, format: date-time }
+        deprecated_at:
+          type: [string, "null"]
+          format: date-time
+
+    Voice:
+      type: object
+      properties:
+        id: { type: string }
+        provider_id: { type: string }
+        name: { type: string }
+        gender:
+          type: string
+          enum: [male, female, neutral]
+        languages:
+          type: array
+          items: { type: string }
+        category: { type: string, example: premade }
+        preview_url:
+          type: [string, "null"]
+          format: uri
+        compatible_models:
+          type: array
+          items: { type: string }
+          description: '["*"] = all; [] = unknown; explicit model ids otherwise'
+        capabilities:
+          type: array
+          items: { type: string }
+        description:
+          type: [string, "null"]
+        meta:
+          type: object
+        updated_at: { type: string, format: date-time }
+        deprecated_at:
+          type: [string, "null"]
+          format: date-time

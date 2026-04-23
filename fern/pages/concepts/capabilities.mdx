@@ -1,0 +1,82 @@
+---
+title: Capabilities
+description: The canonical controlled vocabulary for model and voice features.
+---
+
+`capabilities` is a queryable `text[]` column on both **models** and **voices**.
+It stores canonical flags drawn from a **controlled vocabulary** — never
+freeform. Unknown or provider-specific features live in `meta` instead.
+
+Filter with `?capabilities=a,b` — matches rows containing **ALL** listed terms.
+
+## STT model vocabulary
+
+| Term | Meaning |
+|---|---|
+| `word_timestamps` | Returns per-word start/end timestamps |
+| `speaker_diarization` | Identifies and labels different speakers |
+| `punctuation` | Automatically punctuates output |
+| `profanity_filter` | Can mask or redact profanity |
+| `custom_vocabulary` | Accepts per-request word/phrase boost lists |
+| `language_detection` | Detects input language automatically |
+| `translation` | Returns translated transcript in a target language |
+| `sentiment` | Emits per-utterance sentiment labels |
+| `pii_redaction` | Redacts personally identifiable information |
+| `summarization` | Returns a summary of the transcript |
+| `topic_detection` | Extracts topics from the transcript |
+
+## TTS model vocabulary
+
+| Term | Meaning |
+|---|---|
+| `emotion` | Supports emotion tags or emotional range in output |
+| `voice_cloning` | Can create a voice from a user-supplied audio sample |
+| `voice_design` | Synthesizes a voice from a text description |
+| `ssml` | Accepts SSML markup for fine-grained control |
+| `phoneme_input` | Accepts phonetic input (IPA, X-SAMPA) |
+| `prosody_control` | Per-utterance rate/pitch/volume control |
+| `style_control` | Named style presets (e.g., "cheerful", "newscast") |
+| `multi_speaker` | Can generate multiple distinct speakers in one call |
+
+## Voice vocabulary
+
+Voice-level flags are intentionally minimal. Most capabilities are properties
+of the **model**, not the voice. A voice flag is set only when the feature is
+opt-in per voice:
+
+| Term | Meaning |
+|---|---|
+| `emotion` | This specific voice supports emotion tags (even if the model in general does) |
+| `multilingual_native` | Voice was natively trained on multiple languages, not just run through a multilingual model |
+
+## Example filters
+
+<CodeBlocks>
+```bash "STT with speaker diarization + word timestamps"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=stt&capabilities=speaker_diarization,word_timestamps"
+```
+
+```bash "TTS with SSML + emotion"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=tts&capabilities=ssml,emotion"
+```
+
+```bash "Voices that support emotion"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/voices?capabilities=emotion"
+```
+</CodeBlocks>
+
+## Extending the vocabulary
+
+Adding a new capability term is a **deliberate schema change**. It requires:
+
+1. A PR to `naaviq-voice-providers` adding the term to the canonical list
+2. An update to the AI parser prompt in `naaviq/sync/ai_parser.py`
+3. A changelog entry communicating the new term
+
+The AI parser never invents terms. If a provider's documentation describes a
+feature that doesn't fit the canonical list, it goes in `meta` as a freeform
+key.
+
+This discipline is what keeps the vocabulary queryable long-term. See
+[Contribute → Capabilities vocabulary](/contribute/capabilities-vocab) for
+the full rules.

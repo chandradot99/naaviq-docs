@@ -1,0 +1,91 @@
+---
+title: PR checklist
+description: What reviewers look for before merging a new provider into the registry.
+---
+
+Use this as the PR description template. Reviewers check every box.
+
+## Files touched
+
+- [ ] `naaviq/sync/<provider_id>.py` — new syncer class
+- [ ] `naaviq/sync/registry.py` — one new `SyncerEntry(...)` line
+- [ ] `naaviq/config.py` — env var for API key (if needed)
+- [ ] `.env.example` — placeholder for the same env var
+- [ ] `tests/sync/test_<provider_id>.py` — at least one smoke test (mocked HTTP OK)
+
+No other files. If your PR touches the AI parser, language normalizer, or
+capability vocabulary, that's a separate RFC — see
+[Capabilities vocabulary](/contribute/capabilities-vocab) and [Language
+normalization](/contribute/language-normalization).
+
+## Syncer correctness
+
+- [ ] Subclasses `ProviderSyncer`
+- [ ] Sets `provider_id` and `source` as class vars
+- [ ] Implements exactly one method: `sync()`
+- [ ] Returns `SyncResult(stt_models=..., tts_models=..., tts_voices=..., source=..., api_urls=..., docs_urls=...)`
+- [ ] Returns empty lists for unsupported types (never omits the field)
+- [ ] Populates `api_urls` and `docs_urls` with the actual URLs consulted
+
+## Data hygiene
+
+- [ ] **All** language lists pass through `normalize_languages(...)` before return
+- [ ] `capabilities` values are only from the canonical vocabulary — anything else is in `meta`
+- [ ] `regions` values are only from `us | eu | asia | global` — else `[]` (unknown)
+- [ ] `compatible_models` is `["*"]` if voices are model-agnostic — never `[]` for providers known to be unrestricted
+- [ ] `pricing` is `{}` unless the vendor prints an explicit number
+- [ ] `lifecycle` is only `alpha | beta | ga` from the syncer (never `deprecated` — that's the apply pipeline)
+- [ ] No hardcoded model or voice lists — even `docs`-source syncers go through the AI parser
+
+## AI parser usage (if `docs` or `mixed` source)
+
+- [ ] `parse_models_from_docs` called with explicit `seed_urls` and `guidance`
+- [ ] `guidance` disambiguates `is_default` for snapshot-vs-root model ids
+- [ ] `guidance` gates `lifecycle='beta'` on explicit "Preview" / "Beta" text — no inference from version numbers
+- [ ] `guidance` does NOT embed a specific list of model IDs
+
+## Smoke test output in PR description
+
+Paste the output of:
+
+```bash
+PROVIDER_API_KEY=... ANTHROPIC_API_KEY=... uv run python -m naaviq.sync.<provider_id>
+```
+
+Reviewers want to see:
+
+- The count of STT models, TTS models, and TTS voices returned
+- A few sample rows (spot-check that normalization ran)
+- Any notes the AI parser emitted
+
+## Registry entry
+
+- [ ] Added to `naaviq/sync/registry.py` with:
+  - `provider_id` — matches the class var
+  - `display_name` — human-readable
+  - `type` — `stt | tts | both` (seed value — derived on first sync)
+  - `syncer` — dotted path `"naaviq.sync.<id>:<ClassName>"`
+
+## Documentation
+
+- [ ] If this provider introduces a regional nuance or a new language
+  variant not already in the language normalizer, note it in the PR
+  description
+- [ ] No docs changes needed for typical adds — the catalog page and API
+  reference render from live data
+
+## What reviewers will do
+
+1. Run your syncer against dev DB with `scripts/sync.py <provider_id>`
+2. Review the diff output visually
+3. Spot-check one or two rows against the vendor's actual docs
+4. `--apply` to dev, verify `/v1/providers/<id>` responds as expected
+5. Merge — production promotion happens on the next scheduled `promote.py` run
+
+## After merge
+
+Your provider ships on the next prod promote (typically within 24h). You
+don't need to do anything further.
+
+Thanks for contributing — the registry only works because vendors and
+community members keep it accurate.

@@ -1,0 +1,167 @@
+instances:
+  - url: naaviq.docs.buildwithfern.com
+    custom-domain: docs.naaviq.ai
+
+title: Naaviq Voice Provider Registry
+
+favicon: ./assets/favicon.svg
+logo:
+  light: ./assets/logo-light.svg
+  dark: ./assets/logo-dark.svg
+  height: 32
+  href: /
+
+colors:
+  accent-primary:
+    light: "#1E40AF"
+    dark: "#93C5FD"
+  background:
+    light: "#FFFFFF"
+    dark: "#0B0D12"
+
+navbar-links:
+  - type: minimal
+    text: GitHub
+    url: https://github.com/chandradot99/naaviq-voice-providers
+  - type: filled
+    text: API Base URL
+    url: https://naaviq-voice-providers-production.up.railway.app
+
+tabs:
+  docs:
+    display-name: Documentation
+    icon: fa-solid fa-book
+    slug: docs
+  catalog:
+    display-name: Browse Catalog
+    icon: fa-solid fa-grid-round
+    slug: catalog
+  api:
+    display-name: API Reference
+    icon: fa-solid fa-code
+    slug: api
+  contribute:
+    display-name: Contribute
+    icon: fa-solid fa-code-pull-request
+    slug: contribute
+
+navigation:
+  - tab: docs
+    layout:
+      - section: Getting Started
+        contents:
+          - page: Introduction
+            path: ./pages/introduction.mdx
+            slug: introduction
+          - page: Quickstart
+            path: ./pages/quickstart.mdx
+            slug: quickstart
+
+      - section: Concepts
+        contents:
+          - page: Providers
+            path: ./pages/concepts/providers.mdx
+            slug: providers
+          - page: Models
+            path: ./pages/concepts/models.mdx
+            slug: models
+          - page: Voices
+            path: ./pages/concepts/voices.mdx
+            slug: voices
+          - page: Languages
+            path: ./pages/concepts/languages.mdx
+            slug: languages
+          - page: Capabilities
+            path: ./pages/concepts/capabilities.mdx
+            slug: capabilities
+          - page: Regions
+            path: ./pages/concepts/regions.mdx
+            slug: regions
+          - page: Pricing
+            path: ./pages/concepts/pricing.mdx
+            slug: pricing
+          - page: Lifecycle
+            path: ./pages/concepts/lifecycle.mdx
+            slug: lifecycle
+          - page: Incremental sync
+            path: ./pages/concepts/incremental-sync.mdx
+            slug: incremental-sync
+
+      - section: Recipes
+        contents:
+          - page: Find Hindi TTS providers
+            path: ./pages/recipes/hindi-tts.mdx
+            slug: hindi-tts
+          - page: Low-latency streaming STT
+            path: ./pages/recipes/streaming-stt.mdx
+            slug: streaming-stt
+          - page: Voices with emotion support
+            path: ./pages/recipes/emotion-voices.mdx
+            slug: emotion-voices
+          - page: Cheapest TTS per 1M chars
+            path: ./pages/recipes/cheap-tts.mdx
+            slug: cheap-tts
+          - page: Mirror the registry locally
+            path: ./pages/recipes/local-mirror.mdx
+            slug: local-mirror
+
+      - section: Release notes
+        contents:
+          - page: Changelog
+            path: ./pages/changelog.mdx
+            slug: changelog
+
+  - tab: catalog
+    layout:
+      - page: All providers
+        path: ./pages/catalog/all-providers.mdx
+        slug: providers
+      - page: Models by language
+        path: ./pages/catalog/models-by-language.mdx
+        slug: models-by-language
+      - page: Voice gallery
+        path: ./pages/catalog/voice-gallery.mdx
+        slug: voices
+      - page: Compare providers
+        path: ./pages/catalog/compare.mdx
+        slug: compare
+
+  - tab: api
+    layout:
+      - api: Registry API
+        api-name: registry
+
+  - tab: contribute
+    layout:
+      - page: Overview
+        path: ./pages/contribute/overview.mdx
+        slug: overview
+      - page: Writing a syncer
+        path: ./pages/contribute/writing-a-syncer.mdx
+        slug: writing-a-syncer
+      - page: Using the AI parser
+        path: ./pages/contribute/ai-parser.mdx
+        slug: ai-parser
+      - page: Language normalization
+        path: ./pages/contribute/language-normalization.mdx
+        slug: language-normalization
+      - page: Capabilities vocabulary
+        path: ./pages/contribute/capabilities-vocab.mdx
+        slug: capabilities-vocab
+      - page: PR checklist
+        path: ./pages/contribute/pr-checklist.mdx
+        slug: pr-checklist
+
+footer-links:
+  github: https://github.com/chandradot99/naaviq-voice-providers
+  twitter: https://twitter.com/naaviq
+
+default-language: curl
+
+layout:
+  searchbar-placement: header
+  tabs-placement: header
+  header-height: 64px
+  page-width: 88rem
+  content-width: 44rem
+  sidebar-width: 18rem

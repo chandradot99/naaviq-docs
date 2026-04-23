@@ -1,0 +1,76 @@
+---
+title: Introduction
+description: The open, public registry of voice providers — STT and TTS models, voices, languages, and capabilities for 32 providers.
+---
+
+**Naaviq Voice Providers** is a public, read-only registry of voice AI providers.
+One REST API covers 32 STT and TTS vendors — Deepgram, Cartesia, ElevenLabs,
+OpenAI, Sarvam, Google Cloud, Azure, Amazon, and more — with a unified schema
+for models, voices, languages, and capabilities.
+
+Use it to:
+
+<CardGroup cols={2}>
+  <Card title="Discover providers" icon="magnifying-glass" href="/catalog/providers">
+    Browse every supported STT and TTS vendor with live metadata.
+  </Card>
+  <Card title="Compare capabilities" icon="scale-balanced" href="/docs/recipes/hindi-tts">
+    Filter by language, latency, streaming, voice cloning, price.
+  </Card>
+  <Card title="Integrate the API" icon="code" href="/api">
+    One REST endpoint set, no auth, rate-limited at 100 req/min/IP.
+  </Card>
+  <Card title="Contribute" icon="code-pull-request" href="/contribute/overview">
+    Add a new provider — write a Python syncer, submit a PR.
+  </Card>
+</CardGroup>
+
+## Why this exists
+
+Voice AI moves fast. New models ship monthly; voices are added weekly; pricing
+changes without notice. Every developer ends up re-parsing the same vendor
+docs pages to answer the same questions:
+
+- *Which providers support Hindi streaming STT?*
+- *Which TTS models accept SSML?*
+- *Which voices have emotion control?*
+- *What does Cartesia Sonic 3 actually cost?*
+
+This registry answers all of those questions from one place, with a single
+schema, updated continuously.
+
+## What you get
+
+<Steps>
+  <Step title="A unified schema">
+    Every provider is normalized to the same shape — BCP-47 language codes,
+    canonical capability vocabulary, structured pricing with source URLs.
+  </Step>
+  <Step title="Live, versioned data">
+    Sync scripts re-pull from each provider's docs and APIs. Deprecation is
+    tracked; nothing is hard-deleted.
+  </Step>
+  <Step title="Transparent provenance">
+    Every provider row includes `api_urls` and `docs_urls` so you can trace
+    exactly where the data came from.
+  </Step>
+  <Step title="Zero lock-in">
+    Public API, no auth, open-source sync scripts. Self-host the whole
+    registry from the [source repo](https://github.com/chandradot99/naaviq-voice-providers)
+    if you want.
+  </Step>
+</Steps>
+
+## Next steps
+
+- [**Quickstart**](/docs/getting-started/quickstart) — three `curl` commands, under two minutes.
+- [**Concepts**](/docs/concepts/providers) — the data model: providers, models, voices,
+  capabilities, pricing.
+- [**Browse Catalog**](/catalog/providers) — live, filterable directory.
+- [**API Reference**](/api) — every endpoint with try-it-yourself examples.
+
+<Note>
+  The registry is built by [Naaviq](https://naaviq.ai) and powers the voice
+  pipeline in [Vaaniq](https://github.com/chandradot99/vaaniq), an open-source
+  AI agent platform. The data is free for anyone to use.
+</Note>

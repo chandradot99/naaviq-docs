@@ -1,0 +1,100 @@
+---
+title: Pricing
+description: Structured, source-linked pricing data for models — how to read it, how to filter by it, and why some rows are empty.
+---
+
+`pricing` is a JSONB object on **models only**. TTS vendors price per-model,
+not per-voice, so voices don't carry a pricing field.
+
+An empty object (`{}`) means **"not recorded — check the provider's pricing
+page."** The parser is conservative: it only populates `pricing` when an
+explicit numeric price is printed on the vendor's docs or pricing page.
+It never guesses.
+
+## Shape
+
+```json
+{
+  "unit":       "character",
+  "price_usd":  0.00003,
+  "free_quota": { "amount": 10000, "unit": "character", "period": "month" },
+  "variants": [
+    { "applies_to": "streaming", "unit": "minute", "price_usd": 0.0043 }
+  ],
+  "as_of":      "2026-04-19",
+  "source_url": "https://provider.com/pricing",
+  "notes":      "Bulk tier kicks in below 1M chars/month"
+}
+```
+
+## Fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `unit` | `character` \| `minute` \| `second` \| `word` \| `token` \| `request` \| `hour` | Canonical — enforced by the parser |
+| `price_usd` | number | Cost per one `unit`, in USD |
+| `free_quota` | object, optional | Monthly free tier if the vendor offers one |
+| `variants` | array, optional | Overrides for tiers or modes (streaming, batch, premium voices) |
+| `as_of` | date | When the price was last captured |
+| `source_url` | URL | The page the price came from — always included |
+| `notes` | string, optional | Plain-English context |
+
+## Why `variants`?
+
+Some vendors charge differently for streaming vs batch, or for premium vs
+standard voices. A single `price_usd` can't capture that. The `variants`
+array lists the overrides:
+
+```json
+{
+  "unit": "minute",
+  "price_usd": 0.0043,
+  "variants": [
+    { "applies_to": "flux",      "unit": "minute", "price_usd": 0.0076 },
+    { "applies_to": "nova-3",    "unit": "minute", "price_usd": 0.0043 },
+    { "applies_to": "nova-2",    "unit": "minute", "price_usd": 0.0036 }
+  ]
+}
+```
+
+`applies_to` is freeform — it's whatever label the vendor uses on their
+pricing page.
+
+## Why `as_of` and `source_url` are mandatory
+
+Pricing goes stale. Every populated `pricing` object carries:
+
+- **`as_of`** — when we captured it
+- **`source_url`** — the exact page it came from
+
+If the number you see is more than a few weeks old, click through and verify
+before relying on it. Vendors change pricing without notice.
+
+## Filtering by price
+
+The API doesn't expose a `?max_price` filter — pricing is multi-dimensional
+(units differ, variants exist, free tiers apply) and a single threshold is
+misleading. Instead, fetch the model list and sort client-side:
+
+```python
+models = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=tts"
+).json()
+
+priced = [m for m in models if m.get("pricing", {}).get("price_usd")]
+priced.sort(key=lambda m: m["pricing"]["price_usd"])
+
+for m in priced[:5]:
+    p = m["pricing"]
+    print(f'{m["provider_id"]} {m["id"]}: ${p["price_usd"]}/{p["unit"]}')
+```
+
+See the [Cheapest TTS recipe](/docs/recipes/cheap-tts) for the full normalized-cost
+walkthrough.
+
+## Guaranteed properties
+
+- If `pricing != {}`, then `unit`, `price_usd`, `as_of`, and `source_url` are
+  all present.
+- `unit` is always drawn from the canonical set above.
+- `price_usd` is always in USD, never in the vendor's native currency.

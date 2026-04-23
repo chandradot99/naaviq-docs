@@ -1,0 +1,66 @@
+---
+title: Contribute a provider
+description: How to add a new voice provider to the Naaviq registry.
+---
+
+The registry is open source. Adding a new provider is a single Python
+file + one registry entry + a PR.
+
+<CardGroup cols={2}>
+  <Card title="Writing a syncer" icon="file-code" href="/contribute/writing-a-syncer">
+    Subclass `ProviderSyncer`, implement `sync()`, return `SyncResult`.
+  </Card>
+  <Card title="Using the AI parser" icon="robot" href="/contribute/ai-parser">
+    For providers without an API — agentic Claude loop over docs pages.
+  </Card>
+  <Card title="Language normalization" icon="language" href="/contribute/language-normalization">
+    Every language list must pass through `normalize_languages()`.
+  </Card>
+  <Card title="Capabilities vocabulary" icon="tags" href="/contribute/capabilities-vocab">
+    Only canonical terms — never freeform. Unknowns go in `meta`.
+  </Card>
+  <Card title="PR checklist" icon="list-check" href="/contribute/pr-checklist">
+    What reviewers look for before merging a new provider.
+  </Card>
+</CardGroup>
+
+## Repo
+
+`naaviq-voice-providers` on GitHub: https://github.com/chandradot99/naaviq-voice-providers
+
+## The three source types
+
+Every provider falls into one of three buckets based on where the data
+comes from:
+
+| Type | When to use | Example providers |
+|---|---|---|
+| `api` | Provider exposes a REST API for both models and voices | Deepgram, Azure, Amazon Polly |
+| `docs` | No API — documentation pages parsed by the AI parser | OpenAI, Sarvam, AssemblyAI |
+| `mixed` | API for some data (usually voices) + docs for the rest (usually models) | Cartesia, ElevenLabs, Hume AI |
+
+Pick the simplest that fits. Most new vendors are `mixed`.
+
+## Minimum viable PR
+
+1. `naaviq/sync/<provider_id>.py` — your syncer class
+2. One `SyncerEntry(...)` line in `naaviq/sync/registry.py`
+3. Env var added to `naaviq/config.py` + `.env.example` (if the syncer needs a key)
+4. Smoke test output in the PR description (run `python -m naaviq.sync.<provider_id>`)
+
+That's it. Reviewers handle the rest — running sync against dev DB,
+checking the diff, applying.
+
+## What won't land
+
+- Hardcoded model or voice lists (even from `docs`-source syncers — always
+  use the AI parser so data lands in `.sync-cache/`)
+- Fabricated `"global"` region values (if docs don't specify, the field
+  stays `[]`)
+- New capability terms invented in a PR (vocab changes are a separate,
+  deliberate process)
+- Guessed pricing numbers (if the vendor doesn't print a price, `pricing`
+  stays `{}`)
+
+See [Writing a syncer](/contribute/writing-a-syncer) for the full
+walkthrough with a worked example.

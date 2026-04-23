@@ -1,0 +1,129 @@
+---
+title: Quickstart
+description: Three curl commands that cover the main things you can do with the registry.
+---
+
+The registry is a plain REST API. No auth, no SDK required — but SDKs exist
+if you prefer typed clients. See [API Reference](/api) for all endpoints.
+
+**Base URL:** `https://naaviq-voice-providers-production.up.railway.app`
+**Rate limit:** 100 requests / minute / IP
+
+## 1. List every provider
+
+<CodeBlocks>
+```bash curl
+curl https://naaviq-voice-providers-production.up.railway.app/v1/providers
+```
+
+```python Python
+import httpx
+providers = httpx.get("https://naaviq-voice-providers-production.up.railway.app/v1/providers").json()
+for p in providers:
+    print(p["id"], p["display_name"], p["type"])
+```
+
+```typescript TypeScript
+const providers = await fetch(
+  "https://naaviq-voice-providers-production.up.railway.app/v1/providers"
+).then(r => r.json());
+```
+</CodeBlocks>
+
+**Response (truncated):**
+
+```json
+[
+  { "id": "deepgram",   "display_name": "Deepgram",   "type": "stt",  "source": "api" },
+  { "id": "cartesia",   "display_name": "Cartesia",   "type": "tts",  "source": "mixed" },
+  { "id": "elevenlabs", "display_name": "ElevenLabs", "type": "tts",  "source": "mixed" },
+  { "id": "sarvam",     "display_name": "Sarvam AI",  "type": "both", "source": "docs" }
+]
+```
+
+## 2. Filter models — streaming STT for Hindi
+
+<CodeBlocks>
+```bash curl
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=stt&language=hi"
+```
+
+```python Python
+models = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/models",
+    params={"type": "stt", "language": "hi"}
+).json()
+streaming = [m for m in models if m["streaming"]]
+```
+</CodeBlocks>
+
+You can combine filters: `?type=tts&capabilities=emotion,ssml&region=eu`.
+See [API Reference](/api) for the full query surface.
+
+## 3. Browse voices with audio previews
+
+<CodeBlocks>
+```bash curl
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers/cartesia/voices?language=en"
+```
+</CodeBlocks>
+
+Each voice includes a `preview_url` you can drop straight into an `<audio>` tag:
+
+```html
+<audio controls src="https://api.cartesia.ai/.../preview.mp3" />
+```
+
+## Keeping a local mirror
+
+For heavy use, poll incrementally with `updated_since` so you only pull
+deltas. See [Incremental sync](/docs/concepts/incremental-sync) for the full pattern.
+
+```bash
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers?updated_since=2026-04-15T00:00:00Z"
+```
+
+## Running the API locally
+
+If you want to self-host or contribute, you can run the full registry on your machine.
+
+**Requirements:** Python 3.12+, [uv](https://docs.astral.sh/uv/), Docker
+
+```bash
+# 1. Clone and install
+git clone https://github.com/chandradot99/naaviq-voice-providers
+cd naaviq-voice-providers
+uv sync
+
+# 2. Start Postgres
+docker compose up -d
+
+# 3. Configure environment
+cp .env.example .env
+# Edit .env — set DATABASE_URL to the local Postgres URL from docker-compose
+
+# 4. Run migrations
+uv run alembic upgrade head
+
+# 5. Start the server
+uv run uvicorn naaviq.main:app --reload
+```
+
+The API is now available at `http://localhost:8000`. Swap the base URL in any example above to test against your local instance.
+
+## Where to next
+
+<CardGroup cols={2}>
+  <Card title="Concepts" icon="book" href="/docs/concepts/providers">
+    The data model in depth — capabilities vocab, pricing schema, lifecycle.
+  </Card>
+  <Card title="Recipes" icon="list-check" href="/docs/recipes/hindi-tts">
+    Copy-paste solutions for common filtering tasks.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api">
+    Every endpoint, parameter, and response field.
+  </Card>
+  <Card title="Contribute" icon="code-pull-request" href="/contribute/overview">
+    Add a new provider to the registry.
+  </Card>
+</CardGroup>

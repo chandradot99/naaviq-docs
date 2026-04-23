@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <style>
+    .sail { fill: #1E40AF; }
+    .hull { fill: #3B82F6; }
+    .wave { stroke: #06B6D4; }
+    @media (prefers-color-scheme: dark) {
+      .sail { fill: #BFDBFE; }
+      .hull { fill: #60A5FA; }
+      .wave { stroke: #22D3EE; }
+    }
+  </style>
+  <path class="sail" d="M 24 10 L 24 36 L 46 36 Z"/>
+  <path class="hull" d="M 6 36 L 50 36 L 44 50 L 14 50 Z"/>
+  <path class="wave" d="M 8 58 Q 20 54 32 58 T 56 58" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>

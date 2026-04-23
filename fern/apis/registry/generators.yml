@@ -1,0 +1,17 @@
+# Fern API definition marker. Required in every fern/apis/<name>/ folder,
+# even when no SDK generators are configured.
+#
+# When you want to generate SDKs from the OpenAPI spec, list them here:
+#
+# groups:
+#   python-sdk:
+#     generators:
+#       - name: fernapi/fern-python-sdk
+#         version: latest
+#         output:
+#           location: local-file-system
+#           path: ../../../sdks/python
+
+api:
+  specs:
+    - openapi: ./openapi.yml

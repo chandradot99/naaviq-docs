@@ -1,0 +1,83 @@
+---
+title: Providers
+description: The Provider entity — what it represents, how it's typed, and where the data comes from.
+---
+
+A **Provider** is a company or service that offers STT, TTS, or both. Each row
+in the registry has a stable `id` (lowercase slug like `deepgram` or `cartesia`)
+that never changes once assigned.
+
+## Shape
+
+```json
+{
+  "id": "cartesia",
+  "display_name": "Cartesia",
+  "type": "tts",
+  "source": "mixed",
+  "api_urls":  ["https://api.cartesia.ai/voices"],
+  "docs_urls": ["https://docs.cartesia.ai/build-with-cartesia/tts-models"],
+  "updated_at": "2026-04-18T09:12:44Z",
+  "deprecated_at": null
+}
+```
+
+## `type` — what the provider offers
+
+| Value | Meaning |
+|---|---|
+| `stt` | Speech-to-text only |
+| `tts` | Text-to-speech only |
+| `both` | Both |
+
+<Note>
+  `type` is **derived** on every sync from the set of active (non-deprecated)
+  models for that provider. If a TTS-only vendor ships an STT model, the
+  next sync flips this column automatically. You can rely on it being
+  consistent with what `/v1/providers/{id}/models` returns.
+</Note>
+
+## `source` — how the data was fetched
+
+| Value | When used | Example providers |
+|---|---|---|
+| `api` | Provider exposes a REST API for both models and voices | Deepgram, Azure, Amazon Polly |
+| `docs` | No API — data parsed from documentation pages | OpenAI, Sarvam, AssemblyAI |
+| `mixed` | API for some data + docs parsing for the rest | Cartesia, ElevenLabs, Hume AI |
+
+The parser for `docs` and `mixed` sources is an agentic Claude loop over the
+vendor's documentation pages. Details in [Contribute → AI parser](/contribute/ai-parser).
+
+## Provenance: `api_urls` and `docs_urls`
+
+Every row carries the exact URLs the data was pulled from. This matters when
+you're integrating a provider and want to double-check a capability claim —
+click through to the source.
+
+## Deprecation
+
+Providers are never hard-deleted. When a service shuts down or we stop tracking
+it, `deprecated_at` is set. By default, `/v1/providers` **excludes** deprecated
+rows. Pass `?include_deprecated=true` to see them.
+
+```bash
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers?include_deprecated=true"
+```
+
+## Listing
+
+<CodeBlocks>
+```bash curl
+curl https://naaviq-voice-providers-production.up.railway.app/v1/providers
+```
+
+```bash "Only TTS"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers?type=tts"
+```
+
+```bash "Updated since a date"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers?updated_since=2026-04-01T00:00:00Z"
+```
+</CodeBlocks>
+
+See [API Reference](/api) for the full endpoint spec.

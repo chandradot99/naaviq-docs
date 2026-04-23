@@ -1,0 +1,541 @@
+---
+title: Voice gallery
+description: Browse every TTS voice with filters and inline audio previews.
+---
+
+9,204 active TTS voices across 27 providers, grouped by provider. Each
+section shows up to 12 voices — click the "see `/v1/providers/.../voices`"
+link at the bottom of each section to fetch the full list via API.
+
+**Reading the table:**
+- **id** — the voice identifier to pass when calling the provider's TTS API
+- **gender** — `female`, `male`, or `neutral`; `—` means the provider doesn't expose this field
+- **languages** — BCP-47 codes this voice supports; `*` means the provider claims multilingual support without enumerating specific codes
+- **preview** — a provider-hosted audio sample (`preview_url`); `—` means no sample is available
+
+## Filter by language or gender
+
+To search across all providers instead of scrolling:
+
+```bash
+# Female Hindi voices that have a preview
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/voices?language=hi&gender=female" \
+  | jq '.[] | select(.preview_url != null) | {provider_id, name, preview_url}'
+
+# All voices with emotion-control capability
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/voices?capabilities=emotion_control" | jq
+```
+
+See [Languages](/docs/concepts/languages) for the BCP-47 codes accepted by `?language=`.
+
+## All voices
+
+{/* GENERATED:START voices */}
+_9204 voices across 27 providers. Showing up to 12 per provider._
+
+### Amazon Polly
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `Aditi` | Aditi | female | en-IN, hi-IN | — |
+| `Adriano` | Adriano | male | it-IT | — |
+| `Amy` | Amy | female | en-GB | — |
+| `Andres` | Andrés | male | es-MX | — |
+| `Aria` | Aria | female | en-NZ | — |
+| `Arlet` | Arlet | female | ca-ES | — |
+| `Arthur` | Arthur | male | en-GB | — |
+| `Astrid` | Astrid | female | sv-SE | — |
+| `Ayanda` | Ayanda | female | en-ZA | — |
+| `Bianca` | Bianca | female | it-IT | — |
+| `Brian` | Brian | male | en-GB | — |
+| `Burcu` | Burcu | female | tr-TR | — |
+
+_+ 88 more — see `/v1/providers/amazon-polly/voices`._
+
+### Azure Speech
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `en-IN-AaravNeural` | Aarav | male | en-IN | — |
+| `hi-IN-AaravNeural` | Aarav | male | hi-IN | — |
+| `mr-IN-AarohiNeural` | Aarohi | female | mr-IN | — |
+| `en-IN-AartiNeural` | Aarti | female | en-IN | — |
+| `hi-IN-AartiNeural` | Aarti | female | hi-IN | — |
+| `en-IN-AartiIndicNeural` | Aarti Indic | female | en-IN, en-IN, hi-IN, ta-IN | — |
+| `en-IN-AashiNeural` | Aashi | female | en-IN | — |
+| `en-GB-AbbiNeural` | Abbi | female | en-GB | — |
+| `ar-OM-AbdullahNeural` | Abdullah | male | ar-OM | — |
+| `en-NG-AbeoNeural` | Abeo | male | en-NG | — |
+| `es-ES-AbrilNeural` | Abril | female | es-ES | — |
+| `th-TH-AcharaNeural` | Achara | female | th-TH | — |
+
+_+ 594 more — see `/v1/providers/azure/voices`._
+
+### CAMB.ai
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `170923` | Aanya Sharma | female | * | — |
+| `170781` | Aapo Korhonen | male | * | — |
+| `170924` | Aarav Verma | male | * | — |
+| `170692` | Abril Salazar | female | * | — |
+| `170769` | Abril Torres | female | * | — |
+| `170936` | Adam Nagy | male | * | — |
+| `170470` | Adam Novak | male | * | — |
+| `171059` | Adam Nowak | male | * | — |
+| `170628` | Addison Daniels | female | * | — |
+| `170437` | Adel Haddad | male | * | — |
+| `170907` | Adele Morel | female | * | — |
+| `170795` | Adeline Bernard | female | * | — |
+
+_+ 729 more — see `/v1/providers/cambai/voices`._
+
+### Cartesia
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `f91ab3e6-5071-4e15-b016-cde6f2bcd222` | Aadhya - Soother | female | hi | [preview](https://files.cartesia.ai/files/file_KZGZxHsceTgk2uLNKoRhXv/download?format=playback) |
+| `39d518b7-fd0b-4676-9b8b-29d64ff31e12` | Aarav - Old Time Storyteller | male | en | — |
+| `9cebb910-d4b7-4a4a-85a4-12c79137724c` | Aarti - Conversationalist | female | hi | [preview](https://files.cartesia.ai/files/file_qKuxB6VR3ozWq4NnxbPXMH/download?format=playback) |
+| `2821fd0c-35c7-4adf-9c42-32e394bf85cb` | Adi - Efficient Expert | female | he | — |
+| `e2d48e7b-cd73-4c4c-bc1e-f232580e8709` | Adrian - Explorer | male | en | [preview](https://files.cartesia.ai/files/file_dvrbSHED66zJYZUA4dokkM/download?format=playback) |
+| `f4d6bb07-f876-4464-ba70-cd48d8701890` | Adriana - Bright Entertainer | female | es | — |
+| `6bc7c014-022b-42ce-8b53-a5ec878a7ca7` | Agnieszka - Coordinator | female | pl | — |
+| `2695b6b5-5543-4be1-96d9-3967fb5e7fec` | Agustin - Clear Storyteller | male | es | [preview](https://files.cartesia.ai/files/file_K8HBvLx5enqt5N8J1njWGg/download?format=playback) |
+| `3ccc4544-84f7-45e3-ae57-5c52b5a1fac6` | Aiden - Yogi | male | en | — |
+| `498e7f37-7fa3-4e2c-b8e2-8b6e9276f956` | Aiko - Calming Voice | female | ja | — |
+| `80c81aee-b6ad-4d12-9af8-a9c79c2e141d` | Aina - Meditation Guru | female | en | — |
+| `83604597-55fa-4ccc-8357-730b313f353f` | Aisyah - Chat Partner | female | ms | [preview](https://files.cartesia.ai/files/file_iozd7YzpmL1GmoUPCRvtDk/download?format=playback) |
+
+_+ 713 more — see `/v1/providers/cartesia/voices`._
+
+### Deepgram
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `aura-2-agathe-fr` | Agathe | female | fr, fr-FR | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/42d6da9286f2883874c7f7bd0e4462b5528bda56.wav) |
+| `aura-2-agustina-es` | Agustina | female | es, es-ES | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/c86256aa6178bea3825030d6b183dd97aff72250.wav) |
+| `aura-2-ama-ja` | Ama | female | ja, ja-JP | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/fb06a8b6b7b958b77cafe291ff48df3c2b2b4b43.wav) |
+| `aura-2-amalthea-en` | Amalthea | female | en, en-PH | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/e5f50690fb8e1e2bcdd367290b7d268c495db202.wav) |
+| `aura-2-andromeda-en` | Andromeda | female | en, en-US | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/d6a7514b3b1c3dc48ed5d1d4baaa2bb73c41c59e.wav) |
+| `aura-angus-en` | Angus | male | en, en-IE | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/f45d7dd5526a1661929f39943dbf3771e2203855.wav) |
+| `aura-2-antonia-es` | Antonia | female | es, es-AR | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/e2f37450d392f5a8fc002d28a5ee1dbe728c392d.wav) |
+| `aura-2-apollo-en` | Apollo | male | en, en-US | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/2281ed81ae31472f9a5dbd0accdcb0dd828b273e.wav) |
+| `aura-2-aquila-es` | Aquila | male | es, es-419 | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/4abca777cfc3781e3c0e9dd5b928856a83b45809.wav) |
+| `aura-2-arcas-en` | Arcas | male | en, en-US | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/ddcdfd19ffa637aa4c8762f003f9908670bc3861.wav) |
+| `aura-arcas-en` | Arcas | male | en, en-US | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/af08e65fa6b208c3dbdeb23fc0e9c3424ae835f6.mp3) |
+| `aura-2-aries-en` | Aries | male | en, en-US | [preview](https://cdn.sanity.io/files/0dsbfl6j/production/ba6f9c9e3359beb54cdcb153d9ddfb1f26184c6c.wav) |
+
+_+ 90 more — see `/v1/providers/deepgram/voices`._
+
+### ElevenLabs
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `pNInz6obpgDQGcFmaJgB` | Adam - Dominant, Firm | male | — | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/pNInz6obpgDQGcFmaJgB/d6905d7a-dd26-4187-bfff-1bd3a5ea7cac.mp3) |
+| `Xb7hH8MSUJpSbSDYk0k2` | Alice - Clear, Engaging Educator | female | en, it, fr, ar | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/Xb7hH8MSUJpSbSDYk0k2/d10f7534-11f6-41fe-a012-2de1e482d336.mp3) |
+| `hpp4J3VqNfWAUOO0d1Us` | Bella - Professional, Bright, Warm | female | en | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/hpp4J3VqNfWAUOO0d1Us/dab0f5ba-3aa4-48a8-9fad-f138fea1126d.mp3) |
+| `pqHfZKP75CvOlQylNhV4` | Bill - Wise, Mature, Balanced | male | en, fr, ar, zh | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/pqHfZKP75CvOlQylNhV4/d782b3ff-84ba-4029-848c-acf01285524d.mp3) |
+| `nPczCjzI2devNBz1zQrb` | Brian - Deep, Resonant and Comforting | male | en, ar, zh, pt | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/nPczCjzI2devNBz1zQrb/2dd3e72c-4fd3-42f1-93ea-abc5d4e5aa1d.mp3) |
+| `N2lVS1w4EtoT3dr4eOWO` | Callum - Husky Trickster | male | en, fr, hi | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/N2lVS1w4EtoT3dr4eOWO/ac833bd8-ffda-4938-9ebc-b0f99ca25481.mp3) |
+| `IKne3meq5aSn9XLyUdCD` | Charlie - Deep, Confident, Energetic | male | en, zh, pt, fil | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/IKne3meq5aSn9XLyUdCD/102de6f2-22ed-43e0-a1f1-111fa75c5481.mp3) |
+| `iP95p4xoKVk53GoZ742B` | Chris - Charming, Down-to-Earth | male | en, fr, ar, pt | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/iP95p4xoKVk53GoZ742B/3f4bde72-cc48-40dd-829f-57fbf906f4d7.mp3) |
+| `onwK4e9ZLuTAKqWW03F9` | Daniel - Steady Broadcaster | male | en, de, tr | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/onwK4e9ZLuTAKqWW03F9/7eee0236-1a72-4b86-b303-5dcadc007ba9.mp3) |
+| `cjVigY5qzO86Huf0OWal` | Eric - Smooth, Trustworthy | male | en, fr, pt, de | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/cjVigY5qzO86Huf0OWal/d098fda0-6456-4030-b3d8-63aa048c9070.mp3) |
+| `JBFqnCBsd6RMkjVDRZzb` | George - Warm, Captivating Storyteller | male | en, fr, ar, ja | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/JBFqnCBsd6RMkjVDRZzb/e6206d1a-0721-4787-aafb-06a6e705cac5.mp3) |
+| `SOYHLrjzK2X1ezoPC6cr` | Harry - Fierce Warrior | male | en | [preview](https://storage.googleapis.com/eleven-public-prod/premade/voices/SOYHLrjzK2X1ezoPC6cr/86d178f6-f4b6-4e0e-85be-3de19f490794.mp3) |
+
+_+ 9 more — see `/v1/providers/elevenlabs/voices`._
+
+### Fish Audio
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `9e3682adb6564abda41d6a5eb3053728` | (محمد سعد (اللمبي | male | ar | [preview](https://platform.r2.fish.audio/task/73d2295ea73c42d6a9ca1836eadb37c1.mp3) |
+| `7f92f8afb8ec43bf81429cc1c9199cb1` | AD学姐 | male | zh | [preview](https://platform.r2.fish.audio/task/d21a6aa4d72348efa0d17bfd1df81f62.wav) |
+| `52e0660e03fe4f9a8d2336f67cab5440` | ALEX_CHIKNA | male | en | [preview](https://platform.r2.fish.audio/task/b46d22d922224e54a77cd6afbb58c0bf.mp3) |
+| `59e9dc1cb20c452584788a2690c80970` | ALLE | female | en | [preview](https://platform.r2.fish.audio/task/5507666747e4405091c9875974fa1579.mp3) |
+| `43e1948b1a544700bd88250916cd31e8` | AUDIO DE TERROR | male | es | [preview](https://platform.r2.fish.audio/task/af1c22db2faf4420b0753ab389e4e85a.mp3) |
+| `7e4fa512aa564e198f8659b466f6ff70` | AboFlah - أبو فلة | male | ar | [preview](https://platform.r2.fish.audio/task/117d784a5b0c4f37a3ea3b21073b2667.mp3) |
+| `722523118ee94709b661502c76b016b7` | Adam  | male | en | [preview](https://platform.r2.fish.audio/task/f1e193fe6eff478bbd65e47296ede6dc.mp3) |
+| `bf322df2096a46f18c579d0baa36f41d` | Adrian | male | en | [preview](https://platform.r2.fish.audio/task/d730b09f4a484316a77ecc86137e85fb.mp3) |
+| `27c3d5e27b664b1cb692699a661ed91a` | Ahmed Fakhori - احمد فاخوري | male | ar | [preview](https://platform.r2.fish.audio/task/2f58a9a5e13d463ba26aff4ad191fa27.mp3) |
+| `b94a93bc73ee4ddc93652e3a54f2a22d` | Alastor español latino | male | es | [preview](https://platform.r2.fish.audio/task/480c7db2f76b49359834e3de787c4748.mp3) |
+| `92a2600282e547f098b4a8de1bc9a44a` | Alhaitham | male | en | [preview](https://platform.r2.fish.audio/task/b59065ebd0cb4525ace68bc9a218513e.mp3) |
+| `f8dfe9c83081432386f143e2fe9767ef` | BOOK RECORD REGULAR | male | en | [preview](https://platform.r2.fish.audio/task/ee671024b37b4b68b84271688c68afad.mp3) |
+
+_+ 188 more — see `/v1/providers/fishaudio/voices`._
+
+### Google Cloud
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `af-ZA-Standard-A` | af-ZA-Standard-A | female | af-ZA | — |
+| `am-ET-Standard-A` | am-ET-Standard-A | female | am-ET | — |
+| `am-ET-Standard-B` | am-ET-Standard-B | male | am-ET | — |
+| `am-ET-Wavenet-A` | am-ET-Wavenet-A | female | am-ET | — |
+| `am-ET-Wavenet-B` | am-ET-Wavenet-B | male | am-ET | — |
+| `ar-XA-Chirp3-HD-Achernar` | ar-XA-Chirp3-HD-Achernar | female | ar-XA | — |
+| `ar-XA-Chirp3-HD-Achird` | ar-XA-Chirp3-HD-Achird | male | ar-XA | — |
+| `ar-XA-Chirp3-HD-Algenib` | ar-XA-Chirp3-HD-Algenib | male | ar-XA | — |
+| `ar-XA-Chirp3-HD-Algieba` | ar-XA-Chirp3-HD-Algieba | male | ar-XA | — |
+| `ar-XA-Chirp3-HD-Alnilam` | ar-XA-Chirp3-HD-Alnilam | male | ar-XA | — |
+| `ar-XA-Chirp3-HD-Aoede` | ar-XA-Chirp3-HD-Aoede | female | ar-XA | — |
+| `ar-XA-Chirp3-HD-Autonoe` | ar-XA-Chirp3-HD-Autonoe | female | ar-XA | — |
+
+_+ 2024 more — see `/v1/providers/google-cloud/voices`._
+
+### Groq
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `aaliyah` | Aaliyah | female | ar | — |
+| `Abdullah` | Abdullah | male | ar | — |
+| `adnan` | Adnan | male | ar | — |
+| `Aisha` | Aisha | female | ar | — |
+| `Arista-PlayAI` | Arista | female | en | — |
+| `Atlas-PlayAI` | Atlas | male | en | — |
+| `Austin` | Austin | male | en | — |
+| `Autumn` | Autumn | female | en | — |
+| `Autumn-PlayAI` | Autumn | female | en | — |
+| `Basil-PlayAI` | Basil | male | en | — |
+| `Briggs-PlayAI` | Briggs | male | en | — |
+| `Calum-PlayAI` | Calum | male | en | — |
+
+_+ 23 more — see `/v1/providers/groq/voices`._
+
+### Hume AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `7e4077d4-3f17-4012-bab2-18fd53b0c173` | A Viajante de Alma | female | pt | — |
+| `022b3a94-5b3b-4f31-bc1b-049474d0df06` | A Voz do Silêncio | female | pt | — |
+| `964f54e6-b1f1-4934-8363-af5060ba6980` | Aiko | female | ja | — |
+| `e0d9aa34-a6d5-4892-803e-794b157ce1cb` | Akira | male | ja | — |
+| `a7ecc00a-6fc0-4546-8126-e12cfd8de3bf` | Alice Bennett | female | en | — |
+| `43e411b3-b2cc-40da-b742-4abf0e3557b2` | American Lead Actress | female | en | — |
+| `1a2e8cc5-7ca5-4db5-b799-d0e5728f7892` | Anastasia | female | ru | — |
+| `dbfae3fb-560f-4b2e-836c-8546927484ab` | Anna | female | de | — |
+| `7a5ac5bc-def8-4862-865f-2aa7beb79794` | Arjun | male | hi | — |
+| `4652d91b-edaf-42c5-abd4-904009422de3` | Articulate ASMR British Narrator | male | en | — |
+| `1a655f88-551e-4633-a502-4c0d668168e8` | Aunt Tea | female | en | — |
+| `5bb7de05-c8fe-426a-8fcc-ba4fc4ce9f9c` | Ava Song | female | en | — |
+
+_+ 148 more — see `/v1/providers/humeai/voices`._
+
+### IBM Watson
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `es-LA_AlejandroNatural` | Alejandro | male | es-LA | — |
+| `en-US_AllisonExpressive` | Allison | female | en-US | — |
+| `en-US_AllisonV3Voice` | Allison | female | en-US | — |
+| `de-DE_BirgitV3Voice` | Birgit | female | de-DE | — |
+| `pt-BR_CamilaNatural` | Camila | female | pt-BR | — |
+| `en-GB_CharlotteV3Voice` | Charlotte | female | en-GB | — |
+| `en-GB_ChloeNatural` | Chloe | female | en-GB | — |
+| `es-LA_DanielaExpressive` | Daniela | female | es-LA | — |
+| `es-LA_DanielaNatural` | Daniela | female | es-LA | — |
+| `de-DE_DieterV3Voice` | Dieter | male | de-DE | — |
+| `en-US_EllieNatural` | Ellie | female | en-US | — |
+| `ja-JP_EmiV3Voice` | Emi | female | ja-JP | — |
+
+_+ 36 more — see `/v1/providers/ibm/voices`._
+
+### Inworld AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `Abby` | Abby | female | en-US | — |
+| `Alain` | Alain | male | fr-FR | — |
+| `Alex` | Alex | male | en-US | — |
+| `Amina` | Amina | female | en-US | — |
+| `Anjali` | Anjali | female | en-US | — |
+| `Arjun` | Arjun | male | en-US | — |
+| `Ashley` | Ashley | female | en-US | — |
+| `Asuka` | Asuka | female | ja-JP | — |
+| `Avery` | Avery | male | en-US | — |
+| `Bianca` | Bianca | female | en-US | — |
+| `Blake` | Blake | male | en-US | — |
+| `Brandon` | Brandon | male | en-US | — |
+
+_+ 123 more — see `/v1/providers/inworld/voices`._
+
+### LMNT
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `amy` | Amy | female | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/amy/preview) |
+| `ansel` | Ansel | neutral | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/ansel/preview) |
+| `autumn` | Autumn | female | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/autumn/preview) |
+| `ava` | Ava | female | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/ava/preview) |
+| `bella` | Bella | female | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/bella/preview) |
+| `brandon` | Brandon | male | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/brandon/preview) |
+| `caleb` | Caleb | male | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/caleb/preview) |
+| `cassian` | Cassian | neutral | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/cassian/preview) |
+| `chloe` | Chloe | female | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/chloe/preview) |
+| `dalton` | Dalton | male | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/dalton/preview) |
+| `daniel` | Daniel | male | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/daniel/preview) |
+| `dustin` | Dustin | male | ar, de, en, es | [preview](https://api.lmnt.com/v1/ai/voice/dustin/preview) |
+
+_+ 32 more — see `/v1/providers/lmnt/voices`._
+
+### Lovo AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `63b4094b241a82001d51c5fc` | Aadesh Madar | male | kn-IN | — |
+| `63b417fb241a82001d51df6a` | Aahna Konar | female | ta-MY | — |
+| `63b417a8241a82001d51dedb` | Aarifa Bol | female | su-ID | — |
+| `63b41804241a82001d51df82` | Aarkash Reddy | male | te-IN | — |
+| `63b40682241a82001d51b020` | Abai Berhe | male | am-ET | — |
+| `63b406a6241a82001d51b085` | Abdel El Din | female | ar-LB | — |
+| `63b409b5241a82001d51c6fe` | Abdul-Alim Sayyid | male | ps-AF | — |
+| `63b40979241a82001d51c66e` | Abha Nair | female | ml-IN | — |
+| `63b40763241a82001d51b8c2` | Abigail Fraser | female | en-GB | — |
+| `63b41802241a82001d51df7c` | Abilasha Naicker | female | ta-SG | — |
+| `63b406aa241a82001d51b091` | Abir Salem | female | ar-LY | — |
+| `63b40861241a82001d51c36c` | Abril Santacruz | female | es-NI | — |
+
+_+ 654 more — see `/v1/providers/lovoai/voices`._
+
+### MiniMax
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `Korean_AirheadedGirl` | Airheaded Girl | female | ko | — |
+| `Russian_AmbitiousWoman` | Ambitious Woman | — | ru | — |
+| `Portuguese_AngryMan` | Angry Man | male | pt | — |
+| `Spanish_AngryMan` | Angry Man | male | es | — |
+| `Portuguese_AnimeCharacter` | Anime Character | female | pt | — |
+| `Spanish_AnimeCharacter` | Anime Character | female | es | — |
+| `Portuguese_Arnold` | Arnold | male | pt | — |
+| `Spanish_Arnold` | Arnold | male | es | — |
+| `Arrogant_Miss` | Arrogant Miss | female | — | — |
+| `English_AssertiveQueen` | Assertive Queen | female | en | — |
+| `Portuguese_AssertiveQueen` | Assertive Queen | — | pt | — |
+| `Spanish_AssertiveQueen` | Assertive Queen | — | es | — |
+
+_+ 320 more — see `/v1/providers/minimax/voices`._
+
+### Mistral AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `gb_jane_sarcasm` | Jane - Sarcasm | female | en-GB | — |
+| `gb_oliver_neutral` | Oliver - Neutral | male | en-GB | — |
+| `en_paul_angry` | Paul - Angry | male | en-US | — |
+| `en_paul_cheerful` | Paul - Cheerful | male | en-US | — |
+| `en_paul_confident` | Paul - Confident | male | en-US | — |
+| `en_paul_excited` | Paul - Excited | male | en-US | — |
+| `en_paul_frustrated` | Paul - Frustrated | male | en-US | — |
+| `en_paul_happy` | Paul - Happy | male | en-US | — |
+| `en_paul_neutral` | Paul - Neutral | male | en-US | — |
+| `en_paul_sad` | Paul - Sad | male | en-US | — |
+
+### Murf AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `en-IN-aarav` | Aarav (M) | male | en-IN | — |
+| `bn-IN-abhik` | Abhik (M) | male | bn-IN, en-IN | — |
+| `en-US-abigail` | Abigail (F) | female | en-US | — |
+| `ta-IN-abirami` | Abirami (F) | female | ta-IN | — |
+| `fr-FR-adélie` | Adélie (F) | female | bg-BG, bn-IN, cs-CZ, de-DE | — |
+| `en-UK-aiden` | Aiden (M) | male | en-UK | — |
+| `es-MX-alejandro` | Alejandro (M) | male | es-MX | — |
+| `fr-CA-alexis` | Alexis (M) | male | fr-CA | — |
+| `en-IN-alia` | Alia (F) | female | en-IN | — |
+| `en-US-alicia` | Alicia (F) | female | en-US, es-ES, hi-IN, id-ID | — |
+| `en-US-alina` | Alina (F) | female | en-US | — |
+| `en-US-amara` | Amara (F) | female | bg-BG, bn-IN, cs-CZ, de-DE | — |
+
+_+ 150 more — see `/v1/providers/murf/voices`._
+
+### Neuphonic
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `aed5585d-b1ce-43fa-895f-de746fdf1e67` | Abhi | male | kn | — |
+| `6654e5a9-143e-46f4-a44a-4fcb9e1fe2a6` | Adithya | male | ta | — |
+| `7b2486ca-a177-455a-ab9f-7440fc91c98c` | Aditya | male | en | — |
+| `f8698a9e-947a-43cd-a897-57edd4070a78` | Albert | male | en | — |
+| `3c8d7261-b917-4085-90ad-e7de015b3030` | Alejandra | female | es | — |
+| `d4a01414-c3e2-4eb5-8a15-4833ba691e60` | Alexei (Алексей)  | male | ru | — |
+| `9b5af8fb-3720-425c-8bca-ce01a2b02b29` | Alois | male | es | — |
+| `e564ba7e-aa8d-46a2-96a8-8dffedade48f` | Annie | female | en | — |
+| `7205f431-2448-403c-8e32-aaeb806d8a2b` | Antoine | male | en | — |
+| `850e9835-4bf2-46f8-9d93-ceaca48140f8` | Antoine | male | fr | — |
+| `fa634f3b-4ccf-41ae-8162-202570cebef4` | Callum | male | en | — |
+| `0049e0f3-5506-4f29-9c44-344ed5a9c7c2` | Camille | female | fr | — |
+
+_+ 50 more — see `/v1/providers/neuphonic/voices`._
+
+### OpenAI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `alloy` | Alloy | — | * | — |
+| `ash` | Ash | — | * | — |
+| `ballad` | Ballad | — | * | — |
+| `coral` | Coral | — | * | — |
+| `echo` | Echo | — | * | — |
+| `fable` | Fable | — | * | — |
+| `nova` | Nova | — | * | — |
+| `onyx` | Onyx | — | * | — |
+| `sage` | Sage | — | * | — |
+| `shimmer` | Shimmer | — | * | — |
+
+### Resemble AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `38a0b764` | Aaron | — | en | — |
+| `9fd7430d` | Abdulaziz | — | en | — |
+| `91b49260` | Abigail | — | en | — |
+| `4e228dba` | Adam Lofbomm | — | en | — |
+| `68c4a070` | Ahadi | — | en | — |
+| `78c83912` | Aida | — | en | — |
+| `928de4d4` | Alessandro | — | en | — |
+| `41b99669` | Alex | — | en | — |
+| `6a2211c2` | Alma | — | en | — |
+| `45b91687` | Alparslan | — | en | — |
+| `ecbe5d97` | Amelia | — | en | — |
+| `c99f388c` | Anaya | — | en | — |
+
+_+ 173 more — see `/v1/providers/resemble/voices`._
+
+### Rime AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `abbie` | Abbie | female | en | — |
+| `ahmed_mohamed` | Ahmed Mohamed | neutral | en | — |
+| `albion` | Albion | male | en | — |
+| `alexis` | Alexis | female | en | — |
+| `alfhild` | Alfhild | female | de | — |
+| `allison` | Allison | female | en | — |
+| `ally` | Ally | female | en | — |
+| `alois` | Alois | male | fr | — |
+| `alona` | Alona | female | en | — |
+| `alpine` | Alpine | male | en | — |
+| `alzira` | Alzira | female | pt | — |
+| `amalia` | Amalia | female | de | — |
+
+_+ 392 more — see `/v1/providers/rime/voices`._
+
+### Sarvam
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `aayan` | Aayan | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `abhilash` | Abhilash | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `aditya` | Aditya | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `advait` | Advait | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `amit` | Amit | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `anand` | Anand | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `anushka` | Anushka | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `arya` | Arya | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `ashutosh` | Ashutosh | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `dev` | Dev | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `gokul` | Gokul | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+| `hitesh` | Hitesh | — | hi-IN, bn-IN, ta-IN, te-IN | — |
+
+_+ 32 more — see `/v1/providers/sarvam/voices`._
+
+### Smallest AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `aanya` | Aanya | female | hi | — |
+| `aarush` | Aarush | male | en, hi | — |
+| `advika` | Advika | female | en, hi | — |
+| `aisha` | Aisha | female | en, hi | — |
+| `alex` | Alex | male | en | — |
+| `aneer` | Aneer | male | hi, en | — |
+| `anitha` | Anitha | female | ta | — |
+| `anuja` | Anuja | female | en, hi | — |
+| `arjun` | Arjun | male | en, hi | — |
+| `atharv` | Atharv | male | en, hi | — |
+| `avery` | Avery | female | en | — |
+| `avni` | Avni | female | en, hi | — |
+
+_+ 103 more — see `/v1/providers/smallestai/voices`._
+
+### Speechify
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `aadi` | Aadi | male | hi-IN | [preview](https://vms.cdn.speechify.com/previews/4a5ecdee-0715-4ca8-a1b4-5c8668cf01bf.mp3) |
+| `aaliya` | Aaliya | female | ur-IN | [preview](https://vms.cdn.speechify.com/previews/90cbfa31-f34b-4256-a332-e80bcffc97ac.mp3) |
+| `aamir` | Aamir | male | ur-IN | [preview](https://vms.cdn.speechify.com/previews/2663c0a3-c468-4fff-bf8a-e6729f0c6629.mp3) |
+| `aaron` | Aaron | male | en-US | [preview](https://vms.cdn.speechify.com/previews/cvl-aaron/en.mp3) |
+| `abel` | Abel | male | en-US | [preview](https://vms.cdn.speechify.com/previews/cvl-abel/en.mp3) |
+| `abhay` | Abhay | male | hi-IN | [preview](https://vms.cdn.speechify.com/previews/a89bed46-c6bb-4795-a859-73f53908d976.mp3) |
+| `abhijit` | Abhijit | male | bn-IN | [preview](https://vms.cdn.speechify.com/previews/1bb3dec5-e1c0-441d-86ca-533261cb7895.mp3) |
+| `abigail` | Abigail | female | en-US | [preview](https://vms.cdn.speechify.com/previews/cvl-abigail/en.mp3) |
+| `abirami` | Abirami | female | ta-IN | [preview](https://vms.cdn.speechify.com/previews/84a85888-f571-46bf-8a90-f0bb0184ef98.mp3) |
+| `abraham` | Abraham | male | en-US | [preview](https://vms.cdn.speechify.com/previews/cvl-abraham/en.mp3) |
+| `kyle` | Addie | female | en-US | [preview](https://vms.cdn.speechify.com/previews/d0c39dfe-0488-446b-a1e6-acd3d122bb8a.mp3) |
+| `adeline` | Adeline | female | fr-FR | [preview](https://vms.cdn.speechify.com/previews/5263c734-fd05-4482-9f96-4b94990b0470.mp3) |
+
+_+ 1478 more — see `/v1/providers/speechify/voices`._
+
+### Typecast AI
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `tc_67b6985d4d5d632d97478263` | Aaron | male | * | — |
+| `tc_636b1d8ae820660d79a740f7` | Abigail | female | * | — |
+| `tc_5d01a52c63338e00072b8c9f` | Ae-ran | female | * | — |
+| `tc_676cda78bde49be9d17f38e0` | Ael | female | * | — |
+| `tc_63049449e7dfae64b10c6cb9` | Agatha | female | * | — |
+| `tc_61e7485c629d45e35622d1fc` | Aiden | male | * | — |
+| `tc_689450bdcce4027c2f06eee8` | Alena | female | * | — |
+| `tc_6271b9639382aa2d68e2d5c1` | Alex | male | * | — |
+| `tc_642f9d2775cffa2644e0ecc8` | Amber | female | * | — |
+| `tc_5feb213228b7247f8c8eb6d9` | Anchor Hwa | female | * | — |
+| `tc_6243fb22de596ce0d3ba965c` | Angela | female | * | — |
+| `tc_688185a9183d96f8ca52885e` | Anja | female | * | — |
+
+_+ 530 more — see `/v1/providers/typecastai/voices`._
+
+### Unreal Speech
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `am_adam` | Adam | male | en | — |
+| `bf_alice` | Alice | female | en-GB | — |
+| `af_alloy` | Alloy | female | en | — |
+| `Amelia` | Amelia | female | en-GB | — |
+| `Amy` | Amy | female | en | — |
+| `Ananya` | Ananya | female | hi | — |
+| `af_aoede` | Aoede | female | en | — |
+| `af_bella` | Bella | female | en | — |
+| `Camila` | Camila | female | pt | — |
+| `Chloe` | Chloe | female | en-GB | — |
+| `Dan` | Dan | male | en | — |
+| `Daniel` | Daniel | male | en | — |
+
+_+ 43 more — see `/v1/providers/unrealspeech/voices`._
+
+### WellSaid Labs
+
+| id | name | gender | languages | preview |
+|---|---|---|---|---|
+| `168` | Aakash K. | male | en-HI | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmns23bp2gug107ltwcfhh58w) |
+| `112` | Aaron G. | male | en-AU | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmnrwan07bkmw07ltgndc55y6) |
+| `102` | Abbi D. | female | en-US | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5b0ewz8nf07n0foxxuope) |
+| `141` | Abbi D. | female | en-US | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno599emzivn07n28ppfzh31) |
+| `400` | Ajona D. | female | de-DE | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/8acvn2mQeitB6bjKYpG7) |
+| `71` | Alan T. | male | en-UK | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5c017zjgg07n2kmmpg1h7) |
+| `130` | Alana B. | female | en-US | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5mniizmcf07n2tmzd4h8t) |
+| `3` | Alana B. | female | en-US | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5lr4azm1w07n2yqhisokd) |
+| `111` | Ali P. | female | en-AU | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5o1rvzc0307n03yol04si) |
+| `142` | Antony A. | male | en-US | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5qsmqznuu07n21qyczfmn) |
+| `50` | Antony A. | male | en-US | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5p3uazcdd07n0yshttbha) |
+| `92` | Antony A. | male | en-US | [preview](https://us-west-2.graphassets.com/AsqZIMm0FRceDfKp93Fh8z/cmno5q5frzcvl07n0x6pfzt3c) |
+
+_+ 162 more — see `/v1/providers/wellsaid/voices`._
+{/* GENERATED:END */}
+

@@ -1,0 +1,75 @@
+---
+title: Voices with emotion support
+description: Find TTS voices that accept emotion tags or emotional direction.
+---
+
+Emotion is an **opt-in per voice** feature for most providers — the model
+may support emotion, but only a subset of voices expose the flag. This
+recipe uses the voice-level `capabilities` filter.
+
+## 1. Filter voices with emotion
+
+<CodeBlocks>
+```bash curl
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/voices?capabilities=emotion" | jq
+```
+
+```python Python
+import httpx
+
+voices = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/voices",
+    params={"capabilities": "emotion"}
+).json()
+
+by_provider = {}
+for v in voices:
+    by_provider.setdefault(v["provider_id"], []).append(v)
+
+for p, vs in sorted(by_provider.items()):
+    print(f"{p}: {len(vs)} voices with emotion")
+```
+</CodeBlocks>
+
+## 2. Cross-check with model-level emotion support
+
+Some providers expose emotion on the **model** — meaning every voice can
+use it. For those, the voice-level flag is unset but emotion still works:
+
+```python
+emotion_models = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/models",
+    params={"type": "tts", "capabilities": "emotion"}
+).json()
+```
+
+Combined logic:
+
+```python
+emotion_provider_ids = {v["provider_id"] for v in voices}
+emotion_provider_ids |= {m["provider_id"] for m in emotion_models}
+```
+
+## 3. Pick a voice with a preview
+
+```python
+pickable = [
+    v for v in voices
+    if v["preview_url"] and v["gender"] == "female" and "en" in v["languages"]
+]
+
+for v in pickable:
+    print(v["provider_id"], v["name"], v["preview_url"])
+```
+
+## What "emotion" actually means varies
+
+Read the provider's own docs — the `capabilities` flag only says "this
+thing accepts emotion." The control surface differs:
+
+- **ElevenLabs** — Style slider (0–1), plus recent emotion tags in v3
+- **Cartesia** — `emotion: ["happy:high"]` parameter
+- **Hume AI** — Expression-based, finer-grained than most
+- **OpenAI** — Via prompt instructions (not a dedicated field)
+
+Click through `docs_urls` on the provider to see the exact API surface.

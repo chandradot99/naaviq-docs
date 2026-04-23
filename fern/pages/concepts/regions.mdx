@@ -1,0 +1,64 @@
+---
+title: Regions
+description: Deployment region metadata, canonical vocabulary, and how the ?region filter resolves.
+---
+
+`regions` is a GIN-indexed `text[]` on **models only**, capturing where the
+model can be called from. Vocabulary is **controlled** — four values, lowercase.
+
+| Value | Meaning |
+|---|---|
+| `us` | North America |
+| `eu` | European Union / EEA |
+| `asia` | Asia-Pacific |
+| `global` | No regional restriction / available worldwide |
+
+## Interpreting the value
+
+| Stored value | Interpretation |
+|---|---|
+| `[]` | **Unknown** — not documented. Won't match any `?region=` filter |
+| `["global"]` | Explicitly worldwide |
+| `["us", "eu"]` | Restricted to the listed regions |
+
+Mirrors the [`compatible_models`](/docs/concepts/voices#compatible_models) wildcard
+pattern — `[]` means "unmapped," not "none."
+
+## Filter semantics
+
+`?region=<x>` matches rows where `regions` contains `<x>` **OR** contains
+`"global"`.
+
+| Model `regions` | `?region=us` | `?region=eu` | `?region=asia` |
+|---|---|---|---|
+| `["global"]` | ✓ | ✓ | ✓ |
+| `["us"]` | ✓ | ✗ | ✗ |
+| `["us", "eu"]` | ✓ | ✓ | ✗ |
+| `[]` | ✗ | ✗ | ✗ |
+
+## Why no enumerated country codes
+
+Real deployment boundaries are vendor-specific and noisy (AWS regions, Azure
+geos, CDN edges). The registry keeps this coarse on purpose — it reflects
+what providers actually document, which is usually "US / EU / global."
+
+If you need finer granularity, check the provider's own docs (link in the
+`docs_urls` array) or the model's `meta` field.
+
+## Example
+
+<CodeBlocks>
+```bash "Models available in the EU"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?region=eu"
+```
+
+```bash "Models available in Asia"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?region=asia"
+```
+</CodeBlocks>
+
+## AI parser behavior
+
+The AI parser only emits canonical values (`us`, `eu`, `asia`, `global`). It
+**does not** fabricate `"global"` as a fallback. If a provider's docs don't
+mention regions, the field stays `[]` (unknown).

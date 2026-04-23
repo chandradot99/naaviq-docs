@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" stroke-linejoin="round">
+  <!-- Icon: sail + speech-bubble tail -->
+  <g>
+    <path d="M 50 14 L 82 72 L 18 72 Z" fill="#1E40AF"/>
+    <path d="M 42 70 L 28 90 L 34 70 Z" fill="#F59E0B"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="114" y="66" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="48" font-weight="700" fill="#1E40AF" letter-spacing="-1.2">naaviq</text>
+</svg>

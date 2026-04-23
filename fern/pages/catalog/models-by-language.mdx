@@ -1,0 +1,356 @@
+---
+title: Models by language
+description: Inverted index — pick a language and see every provider that supports it.
+---
+
+314 language codes indexed from all providers. For each code, the table shows
+which providers have at least one model supporting that language for STT and
+for TTS. Regenerated at build time from `GET /v1/models`.
+
+**Reading the table:**
+- **Language** — BCP-47 code (lowercase primary tag, uppercase region). The `*` row at the bottom lists providers that claim broad language support without enumerating codes — they always appear in filtered queries.
+- **STT providers** — have at least one model that accepts audio in this language
+- **TTS providers** — have at least one model that synthesizes speech in this language
+- `—` means no active provider in that category supports this language
+
+## Query the API directly
+
+The table is a snapshot. For a live, filtered list:
+
+```bash
+# All providers with Hindi STT models
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=stt&language=hi" \
+  | jq '[.[] | .provider_id] | unique'
+
+# All providers with Hindi TTS models
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=tts&language=hi" \
+  | jq '[.[] | .provider_id] | unique'
+```
+
+Prefix matching applies: `?language=en` matches `en`, `en-US`, `en-GB`, and
+`*`. `?language=en-IN` matches only `en-IN` and `*`. See
+[Languages](/docs/concepts/languages) for details.
+
+## Index
+
+{/* GENERATED:START models-by-language */}
+| Language | STT providers | TTS providers |
+|---|---|---|
+| `ab-GE` | amazon-transcribe | — |
+| `af` | cartesia, deepgram | elevenlabs, minimax |
+| `af-ZA` | amazon-transcribe | azure |
+| `am` | cartesia, deepgram | — |
+| `am-ET` | — | azure |
+| `ar` | cartesia, deepgram, mistral | cartesia, elevenlabs, fishaudio, groq, humeai, inworld, lmnt, minimax, mistral, neuphonic, rime, wellsaid |
+| `ar-AE` | amazon-transcribe, deepgram | amazon-polly, azure |
+| `ar-BH` | — | azure |
+| `ar-DZ` | deepgram | azure |
+| `ar-EG` | deepgram | azure |
+| `ar-IQ` | deepgram | azure |
+| `ar-IR` | deepgram | — |
+| `ar-JO` | deepgram | azure |
+| `ar-KW` | deepgram | azure |
+| `ar-LB` | deepgram | azure |
+| `ar-LY` | — | azure |
+| `ar-MA` | deepgram | azure |
+| `ar-MS` | ibm | — |
+| `ar-OM` | — | azure |
+| `ar-PS` | deepgram | — |
+| `ar-QA` | deepgram | azure |
+| `ar-SA` | amazon-transcribe, deepgram | azure |
+| `ar-SD` | deepgram | — |
+| `ar-SY` | deepgram | azure |
+| `ar-TD` | deepgram | — |
+| `ar-TN` | deepgram | azure |
+| `ar-YE` | — | azure |
+| `arb` | — | amazon-polly |
+| `as` | cartesia, deepgram | elevenlabs |
+| `as-IN` | sarvam | azure |
+| `ast-ES` | amazon-transcribe | — |
+| `az` | cartesia, deepgram | elevenlabs |
+| `az-AZ` | amazon-transcribe | azure |
+| `ba` | cartesia, deepgram | — |
+| `ba-RU` | amazon-transcribe | — |
+| `be` | cartesia, deepgram | elevenlabs |
+| `be-BY` | amazon-transcribe, deepgram | — |
+| `bg` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `bg-BG` | amazon-transcribe | azure, murf |
+| `bn` | cartesia, deepgram | cartesia, elevenlabs |
+| `bn-BD` | — | azure |
+| `bn-IN` | amazon-transcribe, deepgram, sarvam | azure, murf, sarvam |
+| `bo` | cartesia, deepgram | — |
+| `br` | cartesia, deepgram | — |
+| `brx-IN` | sarvam | — |
+| `bs` | cartesia, deepgram | elevenlabs |
+| `bs-BA` | amazon-transcribe, deepgram | azure |
+| `ca` | cartesia, deepgram | elevenlabs, minimax, neuphonic |
+| `ca-ES` | amazon-transcribe | amazon-polly, azure |
+| `ceb` | — | elevenlabs |
+| `ckb-IQ` | amazon-transcribe | — |
+| `ckb-IR` | amazon-transcribe | — |
+| `cmn-CN` | — | amazon-polly |
+| `cs` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `cs-CZ` | amazon-transcribe, ibm | amazon-polly, azure, murf |
+| `cy` | cartesia, deepgram | elevenlabs |
+| `cy-GB` | — | amazon-polly, azure |
+| `cy-WL` | amazon-transcribe | — |
+| `da` | cartesia, deepgram | cartesia, elevenlabs, minimax, wellsaid |
+| `da-DK` | amazon-transcribe, deepgram | amazon-polly, azure |
+| `de` | assemblyai, cartesia, deepgram, mistral | cartesia, deepgram, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, mistral, neuphonic, rime, smallestai, wellsaid |
+| `de-AT` | deepgram | amazon-polly, azure |
+| `de-CH` | amazon-transcribe, deepgram | amazon-polly, azure |
+| `de-DE` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, google-cloud, ibm, murf |
+| `doi-IN` | sarvam | — |
+| `el` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `el-GR` | amazon-transcribe | azure, murf |
+| `en` | assemblyai, cartesia, deepgram, fishaudio, inworld, mistral, revai, speechmatics | cartesia, deepgram, elevenlabs, fishaudio, groq, humeai, inworld, lmnt, lovoai, minimax, mistral, neuphonic, resemble, rime, smallestai, speechify, unrealspeech, wellsaid |
+| `en-AB` | amazon-transcribe | — |
+| `en-AU` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, google-cloud, ibm, murf |
+| `en-CA` | deepgram | azure, ibm |
+| `en-GB` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, google-cloud, ibm, unrealspeech |
+| `en-Gb-WLS` | — | amazon-polly |
+| `en-HK` | — | azure |
+| `en-IE` | amazon-transcribe, deepgram | amazon-polly, azure, deepgram |
+| `en-IN` | amazon-transcribe, deepgram, ibm, sarvam | amazon-polly, azure, google-cloud, murf, sarvam |
+| `en-KE` | — | azure |
+| `en-MY` | deepgram | — |
+| `en-NG` | — | azure |
+| `en-NZ` | amazon-transcribe, deepgram | amazon-polly, azure |
+| `en-PH` | deepgram | azure, deepgram |
+| `en-Scott` | — | murf |
+| `en-SG` | — | amazon-polly, azure |
+| `en-TZ` | — | azure |
+| `en-UK` | — | murf |
+| `en-US` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, google-cloud, ibm, murf |
+| `en-WL` | amazon-transcribe | — |
+| `en-WW` | ibm | — |
+| `en-ZA` | amazon-transcribe, deepgram | amazon-polly, azure |
+| `es` | assemblyai, cartesia, deepgram, mistral | cartesia, deepgram, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, mistral, neuphonic, rime, smallestai, unrealspeech, wellsaid |
+| `es-419` | deepgram | deepgram |
+| `es-AR` | deepgram | azure, deepgram |
+| `es-BO` | — | azure |
+| `es-CL` | — | azure |
+| `es-CO` | — | azure, deepgram |
+| `es-CR` | — | azure |
+| `es-CU` | — | azure |
+| `es-DO` | — | azure |
+| `es-EC` | — | azure |
+| `es-ES` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, google-cloud, ibm, murf |
+| `es-GQ` | — | azure |
+| `es-GT` | — | azure |
+| `es-HN` | — | azure |
+| `es-LA` | ibm | ibm |
+| `es-Latam` | deepgram | — |
+| `es-MX` | deepgram | amazon-polly, azure, deepgram, murf |
+| `es-NI` | — | azure |
+| `es-PA` | — | azure |
+| `es-PE` | — | azure |
+| `es-PR` | — | azure |
+| `es-PY` | — | azure |
+| `es-SV` | — | azure |
+| `es-US` | amazon-transcribe, deepgram | amazon-polly, azure, google-cloud, ibm |
+| `es-UY` | — | azure |
+| `es-VE` | — | azure |
+| `et` | cartesia, deepgram | elevenlabs |
+| `et-EE` | amazon-transcribe | azure |
+| `et-ET` | amazon-transcribe | — |
+| `eu` | cartesia, deepgram | — |
+| `eu-ES` | amazon-transcribe | azure |
+| `fa` | cartesia, deepgram | elevenlabs, minimax, wellsaid |
+| `fa-IR` | amazon-transcribe | azure |
+| `fi` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `fi-FI` | amazon-transcribe | amazon-polly, azure, murf |
+| `fil` | — | elevenlabs, minimax |
+| `fil-PH` | — | azure |
+| `fo` | cartesia, deepgram | — |
+| `fr` | assemblyai, cartesia, deepgram, mistral | cartesia, deepgram, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, mistral, neuphonic, rime, smallestai, unrealspeech, wellsaid |
+| `fr-BE` | deepgram | amazon-polly, azure |
+| `fr-CA` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, google-cloud, ibm, murf |
+| `fr-CH` | deepgram | azure |
+| `fr-FR` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, google-cloud, ibm, murf |
+| `ga` | — | elevenlabs |
+| `ga-IE` | — | azure |
+| `gl` | cartesia, deepgram | elevenlabs |
+| `gl-ES` | amazon-transcribe | azure |
+| `gu` | cartesia, deepgram | cartesia, elevenlabs, smallestai |
+| `gu-IN` | amazon-transcribe, deepgram, sarvam | azure, murf, sarvam |
+| `ha` | cartesia, deepgram | elevenlabs |
+| `ha-NG` | amazon-transcribe | — |
+| `haw` | cartesia, deepgram | — |
+| `he` | cartesia, deepgram | cartesia, elevenlabs, inworld, minimax, rime |
+| `he-IL` | amazon-transcribe | azure |
+| `hi` | cartesia, deepgram, mistral | cartesia, elevenlabs, humeai, inworld, lmnt, minimax, mistral, neuphonic, rime, smallestai, unrealspeech |
+| `hi-IN` | amazon-transcribe, ibm, sarvam | azure, murf, sarvam |
+| `hi-Latn` | deepgram | — |
+| `hr` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `hr-HR` | amazon-transcribe, deepgram | azure, murf |
+| `ht` | cartesia, deepgram | — |
+| `hu` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `hu-HU` | amazon-transcribe | azure |
+| `hy` | cartesia, deepgram | elevenlabs |
+| `hy-AM` | amazon-transcribe | azure |
+| `id` | cartesia, deepgram | cartesia, elevenlabs, lmnt, minimax |
+| `id-ID` | amazon-transcribe, deepgram | azure, murf |
+| `is` | cartesia, deepgram | elevenlabs |
+| `is-IS` | amazon-transcribe | amazon-polly, azure |
+| `it` | assemblyai, cartesia, deepgram, mistral | cartesia, deepgram, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, mistral, smallestai, wellsaid |
+| `it-IT` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, google-cloud, ibm, murf |
+| `iu-Cans-CA` | — | azure |
+| `iu-Latn-CA` | — | azure |
+| `ja` | cartesia, deepgram, fishaudio, mistral | cartesia, deepgram, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, neuphonic, rime, unrealspeech, wellsaid |
+| `ja-JP` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, ibm, murf |
+| `jv` | — | elevenlabs |
+| `jv-ID` | — | azure |
+| `jw` | cartesia, deepgram | — |
+| `ka` | cartesia, deepgram | cartesia, elevenlabs |
+| `ka-GE` | amazon-transcribe | azure |
+| `kab-DZ` | amazon-transcribe | — |
+| `kk` | cartesia, deepgram | elevenlabs |
+| `kk-KZ` | amazon-transcribe | azure |
+| `km` | cartesia, deepgram | — |
+| `km-KH` | — | azure |
+| `kn` | cartesia, deepgram | cartesia, elevenlabs, neuphonic, smallestai |
+| `kn-IN` | amazon-transcribe, deepgram, sarvam | azure, murf, sarvam |
+| `ko` | cartesia, deepgram, fishaudio, mistral | cartesia, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, neuphonic, wellsaid |
+| `ko-KR` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, ibm, murf |
+| `kok-IN` | sarvam | — |
+| `ks-IN` | sarvam | — |
+| `ky` | — | elevenlabs |
+| `ky-KG` | amazon-transcribe | — |
+| `la` | cartesia, deepgram | — |
+| `lb` | cartesia, deepgram | elevenlabs |
+| `lg-IN` | amazon-transcribe | — |
+| `ln` | cartesia, deepgram | elevenlabs |
+| `lo` | cartesia, deepgram | — |
+| `lo-LA` | — | azure |
+| `lt` | cartesia, deepgram | elevenlabs |
+| `lt-LT` | amazon-transcribe | azure |
+| `lv` | cartesia, deepgram | elevenlabs |
+| `lv-LV` | amazon-transcribe | azure |
+| `mai-IN` | sarvam | — |
+| `mg` | cartesia, deepgram | — |
+| `mhr-RU` | amazon-transcribe | — |
+| `mi` | cartesia, deepgram | — |
+| `mk` | cartesia, deepgram | elevenlabs |
+| `mk-MK` | amazon-transcribe, deepgram | azure |
+| `ml` | cartesia, deepgram | cartesia, elevenlabs, smallestai |
+| `ml-IN` | amazon-transcribe, sarvam | azure, murf, sarvam |
+| `mn` | cartesia, deepgram | — |
+| `mn-MN` | amazon-transcribe | azure |
+| `mni-IN` | sarvam | — |
+| `mr` | cartesia, deepgram | cartesia, elevenlabs, smallestai |
+| `mr-IN` | amazon-transcribe, deepgram, sarvam | azure, murf, sarvam |
+| `ms` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `ms-MY` | amazon-transcribe, deepgram | azure, murf |
+| `ms-SG` | deepgram | — |
+| `mt` | cartesia, deepgram | — |
+| `mt-MT` | amazon-transcribe | azure |
+| `my` | cartesia, deepgram | — |
+| `my-MM` | — | azure |
+| `nb-NO` | — | amazon-polly, azure |
+| `ne` | cartesia, deepgram | elevenlabs |
+| `ne-IN` | sarvam | — |
+| `ne-NP` | — | azure |
+| `nl` | cartesia, deepgram, mistral | cartesia, deepgram, elevenlabs, fishaudio, inworld, lmnt, minimax, mistral, neuphonic, smallestai, wellsaid |
+| `nl-BE` | deepgram, ibm | amazon-polly, azure, murf |
+| `nl-NL` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, deepgram, ibm, murf |
+| `nn` | cartesia, deepgram | — |
+| `no` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `no-NO` | amazon-transcribe, deepgram | — |
+| `ny` | — | elevenlabs |
+| `oc` | cartesia, deepgram | — |
+| `or-IN` | amazon-transcribe, sarvam | azure, sarvam |
+| `pa` | cartesia, deepgram | cartesia, elevenlabs |
+| `pa-IN` | amazon-transcribe, sarvam | azure, murf, sarvam |
+| `pl` | cartesia, deepgram | cartesia, elevenlabs, fishaudio, inworld, lmnt, minimax, wellsaid |
+| `pl-PL` | amazon-transcribe, deepgram | amazon-polly, azure, murf |
+| `ps` | cartesia, deepgram | elevenlabs |
+| `ps-AF` | amazon-transcribe | azure |
+| `pt` | assemblyai, cartesia, deepgram, mistral | cartesia, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, mistral, neuphonic, rime, smallestai, unrealspeech, wellsaid |
+| `pt-BR` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, ibm, murf |
+| `pt-PT` | amazon-transcribe, deepgram | amazon-polly, azure |
+| `ro` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `ro-MD` | deepgram | — |
+| `ro-RO` | amazon-transcribe | amazon-polly, azure, murf |
+| `ru` | cartesia, deepgram, mistral | cartesia, elevenlabs, fishaudio, humeai, inworld, lmnt, minimax, neuphonic |
+| `ru-Latn` | deepgram | — |
+| `ru-RU` | amazon-transcribe, deepgram | amazon-polly, azure |
+| `rw-RW` | amazon-transcribe | — |
+| `sa` | cartesia, deepgram | — |
+| `sa-IN` | sarvam | — |
+| `sat-IN` | sarvam | — |
+| `sd` | cartesia, deepgram | elevenlabs |
+| `sd-IN` | sarvam | — |
+| `si` | cartesia, deepgram | — |
+| `si-LK` | amazon-transcribe | azure |
+| `sk` | cartesia, deepgram | cartesia, elevenlabs, minimax |
+| `sk-SK` | amazon-transcribe | azure, murf |
+| `sl` | cartesia, deepgram | elevenlabs, minimax |
+| `sl-SI` | amazon-transcribe | azure |
+| `sl-SL` | deepgram | — |
+| `sn` | cartesia, deepgram | — |
+| `so` | cartesia, deepgram | elevenlabs |
+| `so-SO` | amazon-transcribe | azure |
+| `sq` | cartesia, deepgram | — |
+| `sq-AL` | — | azure |
+| `sr` | cartesia, deepgram | elevenlabs |
+| `sr-Latn-RS` | — | azure |
+| `sr-RS` | amazon-transcribe, deepgram | azure |
+| `su` | cartesia, deepgram | — |
+| `su-ID` | amazon-transcribe | azure |
+| `sv` | cartesia, deepgram | cartesia, elevenlabs, lmnt, minimax, smallestai, wellsaid |
+| `sv-SE` | amazon-transcribe, deepgram, ibm | amazon-polly, azure, murf |
+| `sw` | cartesia, deepgram | elevenlabs |
+| `sw-BI` | amazon-transcribe | — |
+| `sw-KE` | amazon-transcribe | azure |
+| `sw-RW` | amazon-transcribe | — |
+| `sw-TZ` | amazon-transcribe | azure |
+| `sw-UG` | amazon-transcribe | — |
+| `ta` | cartesia, deepgram | cartesia, elevenlabs, minimax, neuphonic, smallestai |
+| `ta-IN` | amazon-transcribe, deepgram, sarvam | azure, murf, sarvam |
+| `ta-LK` | — | azure |
+| `ta-MY` | — | azure |
+| `ta-SG` | — | azure |
+| `taq` | deepgram | — |
+| `te` | cartesia, deepgram | cartesia, elevenlabs, neuphonic, smallestai |
+| `te-IN` | amazon-transcribe, deepgram, sarvam | azure, murf, sarvam |
+| `tg` | cartesia, deepgram | — |
+| `th` | cartesia, deepgram | cartesia, elevenlabs, lmnt, minimax |
+| `th-TH` | amazon-transcribe, deepgram | azure, murf |
+| `tk` | cartesia, deepgram | — |
+| `tl` | cartesia, deepgram | cartesia |
+| `tl-PH` | amazon-transcribe | murf |
+| `tr` | cartesia, deepgram | cartesia, elevenlabs, lmnt, minimax, wellsaid |
+| `tr-TR` | amazon-transcribe, deepgram | amazon-polly, azure, murf |
+| `tt` | cartesia, deepgram | — |
+| `tt-RU` | amazon-transcribe | — |
+| `ug-CN` | amazon-transcribe | — |
+| `uk` | cartesia, deepgram | cartesia, elevenlabs, lmnt, minimax |
+| `uk-UA` | amazon-transcribe | azure |
+| `ur` | cartesia, deepgram | elevenlabs, lmnt |
+| `ur-IN` | sarvam | azure |
+| `ur-PK` | — | azure |
+| `uz` | cartesia, deepgram | — |
+| `uz-UZ` | amazon-transcribe | azure |
+| `vi` | cartesia, deepgram | cartesia, elevenlabs, lmnt, minimax |
+| `vi-VN` | amazon-transcribe | azure, murf |
+| `wo-SN` | amazon-transcribe | — |
+| `wuu-CN` | — | azure |
+| `yi` | cartesia, deepgram | — |
+| `yo` | cartesia, deepgram | — |
+| `yue` | cartesia | — |
+| `yue-CN` | — | amazon-polly, azure |
+| `zh` | cartesia, deepgram, fishaudio, mistral | cartesia, elevenlabs, fishaudio, inworld, lmnt, minimax, neuphonic, unrealspeech, wellsaid |
+| `zh-CN` | amazon-transcribe, deepgram, ibm | azure, murf |
+| `zh-Cn-HENAN` | — | azure |
+| `zh-Cn-SHANDONG` | — | azure |
+| `zh-Hans` | deepgram | — |
+| `zh-Hant` | deepgram | — |
+| `zh-HK` | amazon-transcribe, deepgram | azure |
+| `zh-TW` | amazon-transcribe, deepgram | azure |
+| `zu-ZA` | amazon-transcribe | azure |
+| `*` | assemblyai, azure, cambai, elevenlabs, gladia, google-cloud, groq, inworld, openai, smallestai, speechmatics | cambai, fishaudio, google-cloud, lovoai, openai, resemble, speechify, typecastai |
+
+_314 languages indexed. `*` = wildcard (provider supports many, no explicit list)._
+{/* GENERATED:END */}
+

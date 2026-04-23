@@ -1,0 +1,98 @@
+---
+title: Models
+description: STT and TTS models — their capabilities, audio formats, pricing, and lifecycle.
+---
+
+A **Model** is a specific callable artifact offered by a provider — e.g.
+Deepgram's `nova-3`, Cartesia's `sonic-3`, OpenAI's `whisper-1`.
+
+## Shape
+
+```json
+{
+  "id": "nova-3",
+  "provider_id": "deepgram",
+  "type": "stt",
+  "display_name": "Nova 3",
+  "description": "50+ languages, ~300ms latency, streaming.",
+  "languages": ["en", "hi", "ta", "te", "fr", "de", "..."],
+  "streaming": true,
+  "is_default": true,
+  "lifecycle": "ga",
+  "capabilities": ["word_timestamps", "punctuation", "language_detection"],
+  "regions": ["global"],
+  "sample_rates_hz": [8000, 16000, 24000, 48000],
+  "audio_formats": ["wav", "mp3", "flac", "opus"],
+  "max_text_chars": null,
+  "max_audio_seconds": 7200,
+  "pricing": {
+    "unit": "minute",
+    "price_usd": 0.0043,
+    "as_of": "2026-04-10",
+    "source_url": "https://deepgram.com/pricing"
+  },
+  "meta": {},
+  "updated_at": "2026-04-18T09:12:44Z",
+  "deprecated_at": null
+}
+```
+
+## Key fields at a glance
+
+| Field | Purpose |
+|---|---|
+| `languages` | BCP-47 codes. `["*"]` = "many, no enumerated list" — see [Languages](/docs/concepts/languages) |
+| `streaming` | `true` = supports real-time. Non-streaming models can't drive a live voice agent |
+| `is_default` | Provider's own recommendation for the newest family. Useful for "pick one for me" defaults |
+| `lifecycle` | `alpha`, `beta`, `ga`, `deprecated`. See [Lifecycle](/docs/concepts/lifecycle) |
+| `capabilities` | Canonical vocab — see [Capabilities](/docs/concepts/capabilities) |
+| `regions` | `us`, `eu`, `asia`, `global`. See [Regions](/docs/concepts/regions) |
+| `pricing` | Structured JSONB — see [Pricing](/docs/concepts/pricing). `{}` means "not recorded" |
+
+## Audio capability fields
+
+Four columns describe audio I/O. The semantics flip with `type`:
+
+| Field | TTS (output side) | STT (input side) |
+|---|---|---|
+| `sample_rates_hz` | Output sample rates produced | Input sample rates accepted |
+| `audio_formats` | Output formats (lowercase: `mp3`, `wav`, `pcm`, `opus`, …) | Input formats accepted |
+| `max_text_chars` | Max characters per request | — (null) |
+| `max_audio_seconds` | — (null) | Max audio duration per request |
+
+Empty array / `null` means "unknown — check the provider's docs."
+The parser never guesses a number that isn't explicitly documented.
+
+## Filtering
+
+<CodeBlocks>
+```bash "By language"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=stt&language=hi"
+```
+
+```bash "By capability (match ALL)"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=tts&capabilities=emotion,ssml"
+```
+
+```bash "By region"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?region=eu"
+```
+
+```bash "By lifecycle"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?lifecycle=ga"
+```
+</CodeBlocks>
+
+## The `meta` field
+
+Provider-specific extras that don't fit the canonical schema — latency hints,
+snapshot dates, EOL dates, special configuration notes. `meta` is intentionally
+unstructured; treat it as advisory.
+
+```json
+"meta": {
+  "snapshot_date": "2026-01-12",
+  "eol_date": "2027-01-12",
+  "latency_p50_ms": 40
+}
+```

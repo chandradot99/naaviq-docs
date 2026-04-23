@@ -1,0 +1,19 @@
+{
+  "name": "naaviq-docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Public docs site for the Naaviq voice provider registry",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "fern docs dev",
+    "preview": "npm run generate-catalog && fern generate --docs --preview",
+    "generate-catalog": "node scripts/generate-catalog.mjs",
+    "sync-api:local": "./scripts/fetch-openapi.sh local",
+    "sync-api:prod": "./scripts/fetch-openapi.sh prod"
+  },
+  "devDependencies": {
+    "fern-api": "^4.79.0"
+  }
+}

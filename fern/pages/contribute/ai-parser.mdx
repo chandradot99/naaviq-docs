@@ -1,0 +1,125 @@
+---
+title: Using the AI parser
+description: Extract structured models and voices from documentation pages with an agentic Claude loop.
+---
+
+`docs` and `mixed` source providers call the AI parser in
+`naaviq/sync/ai_parser.py`. It's an agentic loop — Claude fetches URLs,
+reads them, and calls a terminal `return_models` tool with a validated JSON
+payload.
+
+## Usage
+
+```python
+from naaviq.sync.ai_parser import parse_models_from_docs
+
+models, notes = await parse_models_from_docs(
+    seed_urls=["https://docs.example.com/tts/models"],
+    provider_id="example",
+    model_type="tts",               # "stt" | "tts"
+    guidance=(
+        "Mark the newest family root (e.g., sonic-3 not sonic-3-2026-01-12) "
+        "as is_default. Populate meta.snapshot_date when a dated snapshot "
+        "exists. Set lifecycle='beta' only if the docs explicitly say "
+        "'Preview' or 'Beta'."
+    ),
+)
+```
+
+Returns `(list[SyncModel], notes: str)`. Raises `AIParserError` on failure
+(auth, rate limit, iteration cap, low credit balance).
+
+## What Claude sees
+
+Two tools:
+
+- `fetch_url(url)` — returns plain text from the given URL
+- `return_models(models)` — terminal; JSONSchema-validated; can only be
+  called once
+
+Plus the `guidance=` prompt you passed, plus the canonical vocabularies for
+capabilities, lifecycle, regions, audio formats.
+
+The loop stops when:
+
+- `return_models` is called (success)
+- `MAX_ITERATIONS=15` is reached
+- `MAX_URLS=15` pages have been fetched
+- The iteration budget runs low — a nudge text block appended to the last
+  tool result tells Claude to return immediately
+
+## Deterministic output
+
+- Runs at `temperature=0` for reproducible output
+- System prompt is cached via `cache_control: ephemeral`
+- Results land in `.sync-cache/<provider_id>-<type>.json` so re-runs don't
+  re-parse unchanged pages
+
+## Writing good `guidance=`
+
+The guidance is the only place where provider-specific context enters the
+parser. Three rules:
+
+### 1. Disambiguate `is_default`
+
+Most providers ship multiple snapshots of each model family. Claude needs
+to know which one is the "root" — the unversioned id users should pass by
+default.
+
+```
+Mark the newest family root (e.g., sonic-3 not sonic-3-2026-01-12)
+as is_default. Dated snapshots should have is_default=false.
+```
+
+### 2. Be explicit about `meta` keys you want populated
+
+```
+Populate meta.snapshot_date when a dated snapshot id exists.
+Populate meta.eol_date when the docs announce a sunset date.
+Populate meta.latency_p50_ms when an explicit latency number is documented.
+```
+
+### 3. Gate on explicit text for `lifecycle`
+
+```
+Only set lifecycle='beta' if the docs explicitly use the word
+'Preview', 'Experimental', or 'Beta'. Don't infer from version numbers.
+```
+
+## What NOT to put in `guidance=`
+
+- **Don't** list specific model IDs — the parser should learn them from the
+  docs, not echo your hardcoded list
+- **Don't** specify regions unless the provider actually publishes them
+- **Don't** embed pricing numbers — the parser has its own pricing
+  extraction logic and will read the pricing page separately
+
+## Failure modes
+
+`AIParserError` wraps:
+
+| Cause | Message |
+|---|---|
+| `ANTHROPIC_API_KEY` not set and Claude Code isn't driving | "Anthropic API key required" |
+| Auth error | "Invalid Anthropic API key" |
+| Credit balance low | "Anthropic credit balance too low" |
+| Rate limit hit | `"Anthropic rate limit — retry in Ns"` |
+| `MAX_ITERATIONS` exceeded without return_models | "Parser exceeded iteration cap" |
+| Invalid JSON from Claude (should not happen with JSONSchema enforcement) | "Parser returned invalid payload" |
+
+All of these are recoverable — fix the environment or the `seed_urls` and
+re-run.
+
+## Caching
+
+Structured output is cached at `.sync-cache/<provider_id>-<type>.json`.
+The cache is keyed on:
+
+- Provider id
+- Model type (`stt` | `tts`)
+- A hash of the seed URLs
+
+If any of those change, the cache busts.
+
+`.sync-cache/` is gitignored in the source repo. Don't commit it — it
+defeats the diff/apply workflow that the admin pipeline depends on.

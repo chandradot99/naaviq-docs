@@ -1,0 +1,31 @@
+---
+title: Changelog
+description: Notable changes to the registry API, data model, and capability vocabulary.
+---
+
+All material changes to the API surface, response shapes, and canonical
+vocabularies are logged here.
+
+## 2026-04
+
+- Initial public release
+- 32 providers onboarded across STT, TTS, and both
+- API endpoints stabilized under `/v1/`
+- Canonical vocabularies locked: capabilities, regions, lifecycle
+
+## Vocabulary changes
+
+Additions to canonical vocabularies are **breaking** — clients filtering by
+`capabilities` should update before new values ship. We announce capability
+vocab changes at least 14 days before they appear in responses.
+
+No vocabulary changes yet.
+
+## Deprecated providers
+
+Nothing deprecated yet.
+
+## Breaking API changes
+
+Nothing breaking yet. The `/v1/` URL prefix guarantees existing fields don't
+change shape within a major version.

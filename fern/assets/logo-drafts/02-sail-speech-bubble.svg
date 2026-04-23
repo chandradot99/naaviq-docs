@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" stroke-linejoin="round">
+  <!-- Main sail triangle (navy) -->
+  <path d="M 50 14 L 82 72 L 18 72 Z" fill="#1E40AF"/>
+  <!-- Speech-bubble tail (amber accent) -->
+  <path d="M 42 70 L 28 90 L 34 70 Z" fill="#F59E0B"/>
+</svg>

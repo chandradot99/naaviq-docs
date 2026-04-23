@@ -1,0 +1,95 @@
+---
+title: Voices
+description: TTS voices — preview audio, gender, compatible models, and voice-level capability flags.
+---
+
+A **Voice** is a specific speaker identity exposed by a TTS provider — e.g.
+Cartesia's *Barbershop Man*, ElevenLabs' *Rachel*, Sarvam's *Meera*.
+
+Voices only exist for TTS. STT providers don't have them.
+
+## Shape
+
+```json
+{
+  "id": "a0e99841-438c-4a64-b679-ae501e7d6091",
+  "provider_id": "cartesia",
+  "name": "Barbershop Man",
+  "gender": "male",
+  "languages": ["en", "es"],
+  "category": "premade",
+  "preview_url": "https://api.cartesia.ai/.../preview.mp3",
+  "compatible_models": ["*"],
+  "capabilities": ["emotion"],
+  "description": "Warm, casual, mid-range voice.",
+  "meta": {},
+  "updated_at": "2026-04-18T09:12:44Z",
+  "deprecated_at": null
+}
+```
+
+## `compatible_models` — the voice-model matrix
+
+Each voice maps to the TTS model(s) it works with:
+
+| Value | Meaning |
+|---|---|
+| `["*"]` | Works with **all** models for that provider. Cartesia uses this — voices are model-agnostic |
+| `["aura-2"]`, `["Chirp3-HD"]` | Restricted to explicit model ids. Deepgram TTS and Google Cloud work this way |
+| `[]` | **Unknown** / unmapped (fallback). Voice won't appear when filtering by `?model=…` |
+
+Filtering by model uses: `compatible_models @> ARRAY[<model>] OR compatible_models @> ARRAY['*']`.
+
+<Note>
+  Prefer `["*"]` over `[]` when you know the provider doesn't restrict —
+  `[]` excludes the voice from model-filtered queries.
+</Note>
+
+## `category` — premade vs custom
+
+| Value | Typical source |
+|---|---|
+| `premade` | Vendor-provided public voices |
+| `custom` | User-uploaded or cloned voices |
+| `professional` | High-fidelity recorded voices (ElevenLabs Professional Voice Clones) |
+| `generated` | Synthetic voices designed via a text prompt (ElevenLabs Voice Design) |
+
+Categories are not enforced — they reflect what each vendor actually offers.
+
+## Voice-level capabilities
+
+Most capability flags live on the **model**. A voice carries its own flag only
+when the feature is **opt-in per voice** — typically:
+
+- `emotion` — only some Cartesia voices support emotion tags even though the model does
+- `multilingual_native` — voice was natively trained on multiple languages (vs. being run through a multilingual model)
+
+See [Capabilities](/docs/concepts/capabilities) for the full canonical vocabulary.
+
+## Preview audio
+
+Most voices expose a `preview_url` — a short (~5s) MP3 or WAV hosted by the
+provider. Drop it in an `<audio>` tag:
+
+```html
+<audio controls src={voice.preview_url} />
+```
+
+When `preview_url` is `null`, the provider doesn't expose a canonical preview.
+You can synthesize one yourself via the provider's TTS API.
+
+## Filtering
+
+<CodeBlocks>
+```bash "Hindi female voices"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/voices?language=hi&gender=female"
+```
+
+```bash "Voices with emotion"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/voices?capabilities=emotion"
+```
+
+```bash "ElevenLabs voices compatible with Turbo v2"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/providers/elevenlabs/voices?model=eleven_turbo_v2"
+```
+</CodeBlocks>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Sail (navy) -->
+  <path d="M 50 18 L 50 58 L 78 58 Z" fill="#1E40AF"/>
+  <!-- Hull (medium blue) -->
+  <path d="M 18 58 L 82 58 L 72 76 L 28 76 Z" fill="#3B82F6"/>
+  <!-- Water (cyan wave) -->
+  <path d="M 6 88 Q 20 82 32 88 T 58 88 T 84 88 T 100 88" stroke="#06B6D4" stroke-width="4"/>
+</svg>

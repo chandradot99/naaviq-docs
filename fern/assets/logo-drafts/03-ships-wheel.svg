@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Rim (navy) -->
+  <circle cx="50" cy="50" r="20" stroke="#1E40AF" stroke-width="4"/>
+  <!-- Spokes (navy) -->
+  <g stroke="#1E40AF" stroke-width="4">
+    <line x1="50" y1="50" x2="76" y2="50"/>
+    <line x1="50" y1="50" x2="63" y2="72.5"/>
+    <line x1="50" y1="50" x2="37" y2="72.5"/>
+    <line x1="50" y1="50" x2="24" y2="50"/>
+    <line x1="50" y1="50" x2="37" y2="27.5"/>
+    <line x1="50" y1="50" x2="63" y2="27.5"/>
+  </g>
+  <!-- Hub (amber center) -->
+  <circle cx="50" cy="50" r="4" fill="#F59E0B"/>
+  <!-- Sound ripples on the right (cyan) -->
+  <path d="M 84 34 A 32 32 0 0 1 84 66" stroke="#06B6D4" stroke-width="3" opacity="0.85"/>
+  <path d="M 93 28 A 42 42 0 0 1 93 72" stroke="#06B6D4" stroke-width="3" opacity="0.5"/>
+</svg>

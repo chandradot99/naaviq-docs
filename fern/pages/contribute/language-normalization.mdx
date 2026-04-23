@@ -1,0 +1,87 @@
+---
+title: Language normalization
+description: Every language list must pass through normalize_languages() before being returned from a syncer.
+---
+
+Each vendor uses a different language format — `"en-us"`, `"EN_US"`,
+`"English"`, `"eng"`. The registry normalizes all of them to **BCP-47 with
+uppercase region** so consumers can filter with one consistent code set.
+
+## The single rule
+
+**Always call `normalize_languages()` before returning a language list
+from a syncer.** No exceptions, even if the vendor's format looks like it's
+already BCP-47.
+
+```python
+from naaviq.sync.language import normalize_languages
+
+languages = normalize_languages(raw_from_vendor)    # always, always
+```
+
+## What it handles
+
+| Input form | Example | Output |
+|---|---|---|
+| BCP-47 lowercase region | `"en-us"`, `"fr-fr"` | `"en-US"`, `"fr-FR"` |
+| BCP-47 already correct | `"hi-IN"` | `"hi-IN"` |
+| ISO 639-1 two-letter | `"en"`, `"hi"` | `"en"`, `"hi"` |
+| ISO 639-2 three-letter | `"eng"`, `"ger"`, `"por"` | `"en"`, `"de"`, `"pt"` |
+| Underscore instead of hyphen | `"EN_US"`, `"zh_CN"` | `"en-US"`, `"zh-CN"` |
+| Plain language name | `"English"`, `"Japanese"` | `"en"`, `"ja"` |
+| Wildcard / "many" | passed as `"*"` | `"*"` |
+
+The mapping tables live in `_LANGUAGE_NAME_TO_BCP47` and `_ISO3_TO_BCP47`
+inside `naaviq/sync/language.py`. Both are open for community PRs when
+a new vendor introduces a format the normalizer doesn't recognize.
+
+## The wildcard
+
+Some vendors advertise "many languages" without enumerating them
+(ElevenLabs Scribe claims ~99). For those cases, emit `"*"` once:
+
+```python
+languages = ["*"]
+```
+
+Don't stuff in 99 guessed codes — the wildcard exists for exactly this
+case. See [Languages concept](/docs/concepts/languages#the--wildcard) for how
+filtering resolves against it.
+
+## What if the vendor's format isn't in the table?
+
+Add it. PRs welcome:
+
+1. If it's a name (`"Mandarin"`, `"Brazilian Portuguese"`), add to
+   `_LANGUAGE_NAME_TO_BCP47`
+2. If it's ISO 639-2 (`"spa"`, `"rus"`), add to `_ISO3_TO_BCP47`
+3. If it's something exotic (provider invented a code), handle it in the
+   syncer before calling `normalize_languages` — don't pollute the shared
+   table
+
+## Accents and regional variants
+
+When a vendor distinguishes regional variants, keep them:
+
+- `"en-US"`, `"en-GB"`, `"en-AU"`, `"en-IN"`, `"en-NZ"` — all valid
+- `"pt-BR"` vs `"pt-PT"` — separate codes
+- `"es-419"` — Latin American Spanish
+- `"zh-Hans"` vs `"zh-Hant"` — simplified vs traditional script
+
+When the vendor doesn't distinguish (just says "English"), use the primary
+tag only (`"en"`).
+
+## Testing
+
+After running your syncer, verify:
+
+```python
+for m in result.stt_models + result.tts_models:
+    for lang in m.languages:
+        assert lang == "*" or lang.split("-")[0].islower(), f"Bad language: {lang}"
+        if "-" in lang and lang != "*":
+            primary, *rest = lang.split("-")
+            # region should be uppercase; script should be titlecased
+```
+
+If a test like this fails, you skipped `normalize_languages`.

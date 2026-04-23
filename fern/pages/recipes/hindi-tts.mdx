@@ -1,0 +1,90 @@
+---
+title: Find Hindi TTS providers
+description: Shortlist TTS providers that genuinely support Hindi with voices and previews.
+---
+
+Hindi is tricky. Several providers claim "multilingual" but only natively
+support a narrow set. This recipe filters to providers with real Hindi
+coverage — actual Hindi voices, not just a multilingual model that might
+degrade on Hindi text.
+
+## 1. Providers claiming Hindi TTS
+
+<CodeBlocks>
+```bash curl
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?type=tts&language=hi" \
+  | jq '[.[] | .provider_id] | unique'
+```
+
+```python Python
+import httpx
+
+models = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/models",
+    params={"type": "tts", "language": "hi"}
+).json()
+
+providers = sorted({m["provider_id"] for m in models})
+print(providers)
+```
+</CodeBlocks>
+
+Expected (as of writing): `["azure", "cartesia", "elevenlabs", "google-cloud",
+"sarvam"]`.
+
+## 2. Keep only providers with actual Hindi voices
+
+Models with `languages: ["*"]` advertise "many languages" but don't
+enumerate which. To filter to *real* Hindi support, check the voices too:
+
+```python
+hindi_voices = httpx.get(
+    "https://naaviq-voice-providers-production.up.railway.app/v1/voices",
+    params={"language": "hi"}
+).json()
+
+by_provider = {}
+for v in hindi_voices:
+    by_provider.setdefault(v["provider_id"], []).append(v)
+
+for p, vs in sorted(by_provider.items()):
+    print(f"{p}: {len(vs)} voices")
+```
+
+This is the real shortlist — providers that ship at least one voice tagged
+`hi` or `hi-IN`.
+
+## 3. Pick a voice with a preview
+
+```python
+pickable = [
+    v for v in hindi_voices
+    if v["preview_url"] and v["gender"] == "female"
+]
+
+for v in pickable:
+    print(v["provider_id"], v["name"], v["preview_url"])
+```
+
+## 4. Cost sanity check
+
+```python
+for p in by_provider:
+    models = httpx.get(
+        f"https://naaviq-voice-providers-production.up.railway.app/v1/providers/{p}/models",
+        params={"type": "tts"}
+    ).json()
+    for m in models:
+        pr = m.get("pricing", {})
+        if pr.get("price_usd"):
+            print(f'{p} {m["id"]}: ${pr["price_usd"]}/{pr["unit"]} (as of {pr["as_of"]})')
+```
+
+## Recommendation
+
+<Note>
+  **Sarvam** is purpose-built for Indian languages — best native Hindi
+  pronunciation including code-switched Hinglish. **ElevenLabs multilingual
+  v2** is a strong second with better voice variety. **Google Cloud**'s
+  Chirp HD voices are worth testing for formal / broadcast use cases.
+</Note>

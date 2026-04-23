@@ -1,0 +1,142 @@
+---
+title: Mirror the registry locally
+description: Keep a synced copy of providers, models, and voices in your own database.
+---
+
+If you're rate-sensitive, want offline access, or need to add your own
+columns on top of the registry, mirror it. Here's the full pattern.
+
+## Schema
+
+Mirror whatever fields you care about. Minimal useful shape:
+
+```sql
+CREATE TABLE registry_providers (
+  id TEXT PRIMARY KEY,
+  display_name TEXT,
+  type TEXT,
+  source TEXT,
+  api_urls JSONB,
+  docs_urls JSONB,
+  updated_at TIMESTAMPTZ NOT NULL,
+  deprecated_at TIMESTAMPTZ
+);
+
+CREATE TABLE registry_models (
+  id TEXT,
+  provider_id TEXT,
+  type TEXT,
+  display_name TEXT,
+  languages TEXT[],
+  streaming BOOL,
+  is_default BOOL,
+  lifecycle TEXT,
+  capabilities TEXT[],
+  regions TEXT[],
+  pricing JSONB,
+  meta JSONB,
+  updated_at TIMESTAMPTZ NOT NULL,
+  deprecated_at TIMESTAMPTZ,
+  PRIMARY KEY (provider_id, id)
+);
+
+CREATE TABLE registry_voices (
+  id TEXT,
+  provider_id TEXT,
+  name TEXT,
+  gender TEXT,
+  languages TEXT[],
+  category TEXT,
+  preview_url TEXT,
+  compatible_models TEXT[],
+  capabilities TEXT[],
+  meta JSONB,
+  updated_at TIMESTAMPTZ NOT NULL,
+  deprecated_at TIMESTAMPTZ,
+  PRIMARY KEY (provider_id, id)
+);
+```
+
+## Sync loop
+
+```python
+import httpx
+import asyncpg
+from datetime import datetime, timezone
+
+BASE = "https://naaviq-voice-providers-production.up.railway.app"
+
+async def sync_endpoint(pool, endpoint: str, table: str, upsert_fn):
+    cursor = await get_cursor(pool, table)
+    params = {}
+    if cursor:
+        params["updated_since"] = cursor.isoformat()
+
+    resp = httpx.get(f"{BASE}{endpoint}", params=params, timeout=30.0)
+    resp.raise_for_status()
+    rows = resp.json()
+
+    if not rows:
+        return 0
+
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            for row in rows:
+                await upsert_fn(conn, row)
+            newest = max(datetime.fromisoformat(r["updated_at"]) for r in rows)
+            await set_cursor(conn, table, newest)
+
+    return len(rows)
+
+
+async def tick(pool):
+    await sync_endpoint(pool, "/v1/providers",  "registry_providers", upsert_provider)
+    await sync_endpoint(pool, "/v1/models",     "registry_models",    upsert_model)
+    await sync_endpoint(pool, "/v1/voices",     "registry_voices",    upsert_voice)
+```
+
+## Dedupe on the boundary
+
+The `updated_since` filter is **inclusive** (`>=`). The row whose `updated_at`
+equals your cursor gets returned again on the next poll. Always upsert —
+never insert — and your mirror stays consistent:
+
+```python
+async def upsert_provider(conn, row):
+    await conn.execute("""
+        INSERT INTO registry_providers (id, display_name, type, source,
+                                        api_urls, docs_urls,
+                                        updated_at, deprecated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (id) DO UPDATE SET
+            display_name = EXCLUDED.display_name,
+            type         = EXCLUDED.type,
+            source       = EXCLUDED.source,
+            api_urls     = EXCLUDED.api_urls,
+            docs_urls    = EXCLUDED.docs_urls,
+            updated_at   = EXCLUDED.updated_at,
+            deprecated_at = EXCLUDED.deprecated_at
+    """, row["id"], row["display_name"], row["type"], row["source"],
+         row["api_urls"], row["docs_urls"],
+         row["updated_at"], row.get("deprecated_at"))
+```
+
+## Cadence
+
+Pick cadences that fit your staleness tolerance. The registry itself updates
+at most daily, so:
+
+- **Providers:** once per hour (generous — adds are rare)
+- **Models:** every 6 hours
+- **Voices:** once per day (voice catalogs churn more often, but slowly)
+
+## Deprecation handling
+
+`include_deprecated` auto-flips to `true` when you pass `updated_since`.
+That's deliberate — your mirror sees deprecation events and can hide those
+rows in its own UI. Don't override this unless you really mean to.
+
+## Full source
+
+A working reference implementation lives in the `naaviq-voice-providers`
+repo under `examples/mirror/`.

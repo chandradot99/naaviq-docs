@@ -1,0 +1,66 @@
+---
+title: Languages
+description: BCP-47 language codes, how each provider's format is normalized, and the "*" wildcard convention.
+---
+
+Every provider uses a different language format. The registry normalizes them
+all to **BCP-47 with uppercase region** before storing. This means you can
+filter by one consistent code set across all 32 providers.
+
+## The canonical format
+
+- Two-letter primary tag: lowercase — `en`, `hi`, `ja`
+- Optional region: uppercase after hyphen — `en-US`, `hi-IN`, `pt-BR`
+- Optional script: title-cased — `zh-Hans`, `zh-Hant`
+
+## The `"*"` wildcard
+
+Some providers advertise "many languages" without an enumerated list (e.g.,
+ElevenLabs Scribe claims ~99 languages, but never publishes them all). These
+show up as `languages: ["*"]`.
+
+**Filter logic:** A query for `?language=hi` matches any model whose
+`languages` contains `hi` **or** `*`. So wildcard models always appear in
+language-filtered queries.
+
+<Warning>
+  Wildcard models are a best-effort match. A model listing `"*"` may not
+  actually support every obscure language — verify with a test request
+  against the provider before production use.
+</Warning>
+
+## Filtering
+
+<CodeBlocks>
+```bash "Primary tag only — matches en, en-US, en-GB, etc."
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?language=en"
+```
+
+```bash "Exact region — matches only en-IN"
+curl "https://naaviq-voice-providers-production.up.railway.app/v1/models?language=en-IN"
+```
+</CodeBlocks>
+
+The filter is **prefix-based**: `?language=en` matches `en`, `en-US`, `en-GB`,
+and `*`. `?language=en-US` matches only `en-US` and `*`.
+
+## Indian language coverage
+
+If you're building for the Indian market, see the [Hindi TTS recipe](/docs/recipes/hindi-tts)
+for a pre-filtered shortlist of providers with meaningful Indian-language support.
+
+Canonical codes:
+
+| Language | Code |
+|---|---|
+| Hindi | `hi` / `hi-IN` |
+| Bengali | `bn` / `bn-IN` |
+| Tamil | `ta` / `ta-IN` |
+| Telugu | `te` / `te-IN` |
+| Kannada | `kn` / `kn-IN` |
+| Malayalam | `ml` / `ml-IN` |
+| Marathi | `mr` / `mr-IN` |
+| Gujarati | `gu` / `gu-IN` |
+| Punjabi | `pa` / `pa-IN` |
+| Urdu | `ur` / `ur-IN` |
+| Indian English | `en-IN` |
