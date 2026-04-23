@@ -2,16 +2,16 @@
 
 Public documentation site for the Naaviq voice provider registry.
 
-**Live site:** `docs.naaviq.ai` (configured in `fern/docs.yml`)
-**Built with:** [Fern](https://buildwithfern.com) — the same platform Deepgram, Cohere, and Webflow use.
-**Source data:** The registry API at `providers.naaviq.ai` (repo: `naaviq-voice-providers`).
+**Live site:** [docs.naaviq.ai](https://docs.naaviq.ai)
+**Built with:** [Fern](https://buildwithfern.com)
+**Source data:** Registry API at `https://naaviq-voice-providers-production.up.railway.app` (repo: [naaviq-voice-providers](https://github.com/chandradot99/naaviq-voice-providers))
 
 ## What lives here
 
 - `fern/docs.yml` — site configuration: navigation, theme, tabs
 - `fern/pages/` — MDX content (Concepts, Recipes, Contribute, Changelog)
-- `fern/apis/registry/openapi.yml` — OpenAPI spec ingested from `naaviq-voice-providers`; drives the API Reference section and the generated SDKs
-- `fern/assets/` — logos, favicons, audio samples
+- `fern/apis/registry/openapi.yml` — OpenAPI spec synced from `naaviq-voice-providers`; drives the API Reference section
+- `fern/assets/` — logos, favicons
 - `scripts/fetch-openapi.sh` — pulls the latest spec from the running API
 
 ## Local development
@@ -23,9 +23,8 @@ nvm use
 # 2. Install Fern CLI
 npm install -g fern-api
 
-# 3. Pull the latest OpenAPI spec from the local API
-#    (requires naaviq-voice-providers running on :8000)
-./scripts/fetch-openapi.sh local
+# 3. Pull the latest OpenAPI spec from prod
+./scripts/fetch-openapi.sh prod
 
 # 4. Preview the docs site
 fern docs dev
@@ -37,15 +36,18 @@ The preview runs at `http://localhost:3000`.
 
 | What changed | What to update |
 |---|---|
-| Added a new provider to `naaviq-voice-providers` | Nothing here — the catalog renders from live API data |
+| Added a new provider to `naaviq-voice-providers` | Nothing — the catalog renders from live API data |
 | Added a new capability to the canonical vocab | `fern/pages/concepts/capabilities.mdx` |
-| Changed an API endpoint / response shape | Re-run `./scripts/fetch-openapi.sh` to sync `apis/registry/openapi.yml` |
+| Changed an API endpoint / response shape | Re-run `./scripts/fetch-openapi.sh prod` to sync `fern/apis/registry/openapi.yml` |
 | Added a new recipe | Create `fern/pages/recipes/<slug>.mdx` + add to `docs.yml` navigation |
-| Added a new sync source type | `fern/pages/contribute/writing-a-syncer.mdx` |
 
 ## Deployment
 
-Deployed via Fern's hosted platform. Push to `main` → Fern picks up the changes → deploys to `docs.naaviq.ai`.
+```bash
+fern generate --docs
+```
+
+Or connect the GitHub repo in the [Fern dashboard](https://app.buildwithfern.com) to auto-deploy on every push to `main`.
 
 ## Repo relationships
 

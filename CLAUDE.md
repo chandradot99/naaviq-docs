@@ -7,7 +7,7 @@ Public docs site for the Naaviq voice provider registry. Built with Fern.
 - **Not** a Python or Node app — it's a Fern docs project
 - Source content lives in `fern/pages/*.mdx`
 - Site navigation is defined in `fern/docs.yml`
-- API reference is auto-generated from `fern/openapi/openapi.yml` (pulled from the `naaviq-voice-providers` FastAPI app)
+- API reference is auto-generated from `fern/apis/registry/openapi.yml` (pulled from the `naaviq-voice-providers` FastAPI app)
 
 ## Repo relationships
 
@@ -32,7 +32,7 @@ naaviq-docs/
 │   │   ├── introduction.mdx
 │   │   ├── quickstart.mdx
 │   │   ├── concepts/              — data model docs (9 pages)
-│   │   ├── catalog/               — Browse pages (live-data)
+│   │   ├── catalog/               — browse pages (live-data tables)
 │   │   ├── recipes/               — task-oriented how-tos
 │   │   ├── contribute/            — how to add a provider
 │   │   └── changelog.mdx
@@ -46,25 +46,31 @@ naaviq-docs/
 ```bash
 nvm use                            # .nvmrc → Node 22 LTS
 npm install -g fern-api
-./scripts/fetch-openapi.sh local
+./scripts/fetch-openapi.sh prod    # pull latest spec from Railway
 fern docs dev
 ```
 
-**Node:** 22 LTS (pinned in `.nvmrc`). Fern CLI requires Node 18+; 22 is the
-current LTS and is well-tested with Fern. Newer versions also work — the
-vaaniq-web repo uses Node 25 without issue.
+**Node:** 22 LTS (pinned in `.nvmrc`). Fern CLI requires Node 18+.
+
+## Publishing
+
+```bash
+fern generate --docs
+```
+
+Or connect `chandradot99/naaviq-docs` in the [Fern dashboard](https://app.buildwithfern.com) to auto-deploy on push to `main`.
 
 ## Common tasks
 
 ### New provider added upstream
-Nothing to do here. The catalog page renders from live API data at
-`providers.naaviq.ai/v1/providers`.
+Nothing to do here. The catalog pages render from live API data at
+`https://naaviq-voice-providers-production.up.railway.app/v1/providers`.
 
 ### API endpoint or schema changed
 ```bash
-./scripts/fetch-openapi.sh prod    # or `local` during dev
+./scripts/fetch-openapi.sh prod
 ```
-Commit the updated `fern/openapi/openapi.yml`.
+Commit the updated `fern/apis/registry/openapi.yml`.
 
 ### Capability vocab term added
 Edit `fern/pages/concepts/capabilities.mdx` — keep the canonical list in
@@ -87,4 +93,4 @@ reference for that vocabulary.
 
 - Fern docs: https://buildwithfern.com/learn
 - Live API: https://naaviq-voice-providers-production.up.railway.app
-- Source repo: https://github.com/naaviq/naaviq-voice-providers
+- Source repo: https://github.com/chandradot99/naaviq-voice-providers
